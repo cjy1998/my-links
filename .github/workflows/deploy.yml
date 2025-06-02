@@ -1,0 +1,39 @@
+name: Docker CI/CD to Aliyun
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    # 1. 检出代码
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    # 2. 登录阿里云容器镜像服务
+    - name: Login to Aliyun ACR
+      uses: docker/login-action@v2
+      with:
+        registry: registry.cn-hangzhou.aliyuncs.com
+        username: ${{ secrets.ACR_USERNAME }}
+        password: ${{ secrets.ACR_PASSWORD }}
+
+    # 3. 构建并推送 Docker 镜像
+    - name: Build and Push Docker Image
+      run: |
+        docker build -t your-app:${{ github.sha }} .
+        docker tag your-app:${{ github.sha }} registry.cn-hangzhou.aliyuncs.com/your-namespace/your-repo:${{ github.sha }}
+        docker push registry.cn-hangzhou.aliyuncs.com/your-namespace/your-repo:${{ github.sha }}
+
+    # 4. 通过 SSH 部署到 ECS
+    - name: Deploy to ECS
+      uses: appleboy/ssh-action@v1
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
+            "bash /app/deploy/deploy.sh ${{ github.sha }}"
