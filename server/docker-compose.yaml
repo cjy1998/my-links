@@ -1,0 +1,13 @@
+version: '3.7'
+services:
+  prisma-example:
+    image: "prisma-example:v0.0.1"
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    container_name: prisma-example
+    restart: always
+    env_file:
+      - ./.env
+    ports:
+      - 3000:3000
