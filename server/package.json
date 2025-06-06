@@ -53,7 +53,7 @@
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
-    "prisma": "^5.12.1",
+    "prisma": "6.1.0",
     "redis-info": "^3.1.0",
     "reflect-metadata": "^0.2.2",
     "rimraf": "^5.0.5",

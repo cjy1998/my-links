@@ -1,5 +1,5 @@
 # 构建阶段
-FROM node:20-bookworm-slim AS build
+FROM node:20-alpine3.20 AS build
 LABEL Author="mobiusy"
 
 WORKDIR /build
@@ -16,11 +16,13 @@ COPY ./ ./
 RUN yarn prisma generate && yarn build
 
 # 生产镜像
-FROM node:20-bookworm-slim
+FROM node:20-alpine3.20
 LABEL Author="mobiusy"
 
 # 设置时区
 RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime  && echo 'Asia/Shanghai' >/etc/timezone
+# 新增端口暴露指令
+EXPOSE 3000
 
 WORKDIR /opt/application
 
