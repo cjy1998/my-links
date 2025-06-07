@@ -28,17 +28,21 @@ jobs:
           password: ${{ secrets.ACR_PASSWORD }}
       #4. 构建前端镜像
       - name: Build ui Image
+        env:
+          IMAGE_TAG: ${{ github.sha }}
         run: |
           cd ui
-          docker build -t ${{ secrets.ACR_REGISTRY }}/${{ secrets.ACR_NAMESPACE }}/ui:${{ github.sha }} .
-          docker push ${{ secrets.ACR_REGISTRY }}/${{ secrets.ACR_NAMESPACE }}/ui:${{ github.sha }}
+          docker build -t ${{ secrets.ACR_REGISTRY }}/${{ secrets.ACR_NAMESPACE }}/ui:$IMAGE_TAG .
+          docker push ${{ secrets.ACR_REGISTRY }}/${{ secrets.ACR_NAMESPACE }}/ui:$IMAGE_TAG
 
       # 5.构建后端镜像
       - name: Build server Image
+        env:
+          IMAGE_TAG: ${{ github.sha }}
         run: |
           cd server
-          docker build -t ${{ secrets.ACR_REGISTRY }}/${{ secrets.ACR_NAMESPACE }}/server:${{ github.sha }} .
-          docker push ${{ secrets.ACR_REGISTRY }}/${{ secrets.ACR_NAMESPACE }}/server:${{ github.sha }}
+          docker build -t ${{ secrets.ACR_REGISTRY }}/${{ secrets.ACR_NAMESPACE }}/server:$IMAGE_TAG .
+          docker push ${{ secrets.ACR_REGISTRY }}/${{ secrets.ACR_NAMESPACE }}/server:$IMAGE_TAG
       # 6.部署脚本
       - name: Sync deployment scripts
         uses: appleboy/scp-action@v0.1.3
