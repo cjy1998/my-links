@@ -3,52 +3,52 @@ name: Docker CI/CD to Aliyun
 on:
   workflow_dispatch:
   push:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-    # 1. 检出代码
-    - name: Checkout code
-      uses: actions/checkout@v4
+      # 1. 检出代码
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    # 2. 登录阿里云容器镜像服务
-    - name: Login to Aliyun ACR
-      uses: docker/login-action@v2
-      with:
-        registry: registry.cn-hangzhou.aliyuncs.com
-        username: ${{ secrets.ACR_USERNAME }}
-        password: ${{ secrets.ACR_PASSWORD }}
-  # 构建前端镜像
-    - name: Build ui Image
-      run: |
-        cd ui
-        docker build -t ${{ secrets.ACR_REGISTRY }}/${{ secrets.ACR_NAMESPACE }}/ui:${{ github.sha }} .
-        docker push ${{ secrets.ACR_REGISTRY }}/${{ secrets.ACR_NAMESPACE }}/ui:${{ github.sha }}
-      
-    # 构建后端镜像
-    - name: Build server Image
-      run: |
-        cd server
-        docker build -t ${{ secrets.ACR_REGISTRY }}/${{ secrets.ACR_NAMESPACE }}/server:${{ github.sha }} .
-        docker push ${{ secrets.ACR_REGISTRY }}/${{ secrets.ACR_NAMESPACE }}/server:${{ github.sha }}
-    # 部署脚本
-    - name: Sync deployment scripts
-      uses: appleboy/scp-action@v0.1.3
-      with:
-        host: ${{ secrets.SSH_HOST }}
-        username: ${{ secrets.SSH_USER }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        source: "scripts/*"       # 同步scripts目录
-        target: "/app/deploy/"    # 目标位置
-    # 4. 通过 SSH 部署到 ECS
-    - name: Deploy to ECS
-      uses: appleboy/ssh-action@v1
-      with:
-        host: ${{ secrets.SSH_HOST }}
-        username: ${{ secrets.SSH_USER }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        script: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
-            "bash app/deploy/deploy.sh ${{ github.sha }}"
+      # 2. 登录阿里云容器镜像服务
+      - name: Login to Aliyun ACR
+        uses: docker/login-action@v2
+        with:
+          registry: crpi-b2oonawkgqs9orcs.cn-beijing.personal.cr.aliyuncs.com
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+      # 构建前端镜像
+      - name: Build ui Image
+        run: |
+          cd ui
+          docker build -t ${{ secrets.ACR_REGISTRY }}/${{ secrets.ACR_NAMESPACE }}/ui:${{ github.sha }} .
+          docker push ${{ secrets.ACR_REGISTRY }}/${{ secrets.ACR_NAMESPACE }}/ui:${{ github.sha }}
+
+      # 构建后端镜像
+      - name: Build server Image
+        run: |
+          cd server
+          docker build -t ${{ secrets.ACR_REGISTRY }}/${{ secrets.ACR_NAMESPACE }}/server:${{ github.sha }} .
+          docker push ${{ secrets.ACR_REGISTRY }}/${{ secrets.ACR_NAMESPACE }}/server:${{ github.sha }}
+      # 部署脚本
+      - name: Sync deployment scripts
+        uses: appleboy/scp-action@v0.1.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "scripts/*" # 同步scripts目录
+          target: "/app/deploy/" # 目标位置
+      # 4. 通过 SSH 部署到 ECS
+      - name: Deploy to ECS
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
+              "bash app/deploy/deploy.sh ${{ github.sha }}"
