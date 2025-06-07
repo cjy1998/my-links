@@ -72,5 +72,17 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
-              "bash app/deploy/deploy.sh ${{ github.sha }}"
+            # 确保脚本可执行
+            chmod +x /app/deploy/deploy.sh
+
+            # 添加调试信息
+            echo "当前目录: $(pwd)"
+            echo "脚本路径: /app/deploy/deploy.sh"
+            ls -la /app/deploy
+
+            # 执行部署脚本
+            /app/deploy/deploy.sh ${{ github.sha }}
+
+            # 验证部署结果
+            docker ps -a
+            curl -I http://localhost:80
