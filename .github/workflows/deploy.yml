@@ -73,15 +73,15 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             # 确保脚本可执行
-            chmod +x /app/deploy/deploy.sh
+            chmod +x /app/scripts/deploy.sh
 
             # 添加调试信息
             echo "当前目录: $(pwd)"
-            echo "脚本路径: /app/deploy/deploy.sh"
-            ls -la /app/deploy
+            echo "脚本路径: /app/scripts/deploy.sh"
+            ls -la /app/scripts
 
             # 执行部署脚本
-            /app/deploy/deploy.sh ${{ github.sha }}
+            /app/scripts/deploy.sh ${{ github.sha }}
 
             # 验证部署结果
             docker ps -a
