@@ -16,14 +16,14 @@ jobs:
       - name: Setup Docker mirror
         run: |
           echo '{
-            "registry-mirrors": ["https://docker.1ms.run","https://docker.xuanyuan.me"]
+            "registry-mirrors": ["https://dockerproxy.com"]
           }' | sudo tee /etc/docker/daemon.json
           sudo systemctl restart docker || true
       # 3. 登录阿里云容器镜像服务
       - name: Login to Aliyun ACR
-        uses: aliyun/acr-login@v1
+        uses: aliyun/acr-login@v1.0.6
         with:
-          registry: ${{ secrets.ACR_REGISTRY }}
+          login-server: ${{ secrets.ACR_REGISTRY }}
           username: ${{ secrets.ACR_USERNAME }}
           password: ${{ secrets.ACR_PASSWORD }}
       #4. 构建前端镜像
