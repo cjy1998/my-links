@@ -17,7 +17,7 @@ jobs:
       - name: Login to Aliyun ACR
         uses: aliyun/acr-login@v1
         with:
-          registry: crpi-b2oonawkgqs9orcs.cn-beijing.personal.cr.aliyuncs.com
+          registry: ${{ secrets.ACR_REGISTRY }}
           username: ${{ secrets.ACR_USERNAME }}
           password: ${{ secrets.ACR_PASSWORD }}
       # 构建前端镜像
