@@ -1,14 +1,13 @@
-# 构建阶段
-FROM node:20-bookworm-slim AS build
+# 仅构建阶段 - 不包含运行环境
+FROM node:20-alpine3.20 AS build
 WORKDIR /app
-COPY package*.json ./
-RUN npm install --force && npm cache clean --force
-COPY . .
-RUN npm run build
+COPY package.json ./package.json
+COPY yarn.lock ./yarn.lock
 
-# 生产镜像
-FROM nginx:1.25-bookworm
-COPY --from=build /app/dist /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+RUN yarn
+COPY . .
+RUN yarn build
+
+# 最终阶段 - 只包含构建产物
+FROM scratch AS export
+COPY --from=build /app/dist /dist
