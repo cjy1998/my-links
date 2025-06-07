@@ -43,6 +43,18 @@ jobs:
           cd server
           docker build -t ${{ secrets.ACR_REGISTRY }}/${{ secrets.ACR_NAMESPACE }}/server:$IMAGE_TAG .
           docker push ${{ secrets.ACR_REGISTRY }}/${{ secrets.ACR_NAMESPACE }}/server:$IMAGE_TAG
+
+      # 测试 SSH 连接
+      - name: Test SSH Connection
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            echo "SSH 连接成功！"
+            whoami
+            pwd
       # 6.部署脚本
       - name: Sync deployment scripts
         uses: appleboy/scp-action@v0.1.3
