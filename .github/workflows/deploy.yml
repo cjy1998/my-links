@@ -12,11 +12,11 @@ jobs:
       # 1. 检出代码
       - name: Checkout code
         uses: actions/checkout@v4
-    # 2. 配置阿里云镜像加速器（关键步骤）
+      # 2. 配置阿里云镜像加速器（关键步骤）
       - name: Setup Docker mirror
         run: |
           echo '{
-            "registry-mirrors": ["https://registry-mirrors.aliyuncs.com"]
+            "registry-mirrors": ["https://docker.1ms.run","https://docker.xuanyuan.me"]
           }' | sudo tee /etc/docker/daemon.json
           sudo systemctl restart docker || true
       # 3. 登录阿里云容器镜像服务
@@ -30,15 +30,15 @@ jobs:
       - name: Build ui Image
         run: |
           cd ui
-          docker build -t ${{ secrets.ACR_REGISTRY }}/${{ secrets.ACR_NAMESPACE }}ui:${{ github.sha }} .
-          docker push ${{ secrets.ACR_REGISTRY }}/${{ secrets.ACR_NAMESPACE }}ui:${{ github.sha }}
+          docker build -t ${{ secrets.ACR_REGISTRY }}/${{ secrets.ACR_NAMESPACE }}/ui:${{ github.sha }} .
+          docker push ${{ secrets.ACR_REGISTRY }}/${{ secrets.ACR_NAMESPACE }}/ui:${{ github.sha }}
 
       # 5.构建后端镜像
       - name: Build server Image
         run: |
           cd server
-          docker build -t ${{ secrets.ACR_REGISTRY }}/${{ secrets.ACR_NAMESPACE }}server:${{ github.sha }} .
-          docker push ${{ secrets.ACR_REGISTRY }}/${{ secrets.ACR_NAMESPACE }}server:${{ github.sha }}
+          docker build -t ${{ secrets.ACR_REGISTRY }}/${{ secrets.ACR_NAMESPACE }}/server:${{ github.sha }} .
+          docker push ${{ secrets.ACR_REGISTRY }}/${{ secrets.ACR_NAMESPACE }}/server:${{ github.sha }}
       # 6.部署脚本
       - name: Sync deployment scripts
         uses: appleboy/scp-action@v0.1.3
