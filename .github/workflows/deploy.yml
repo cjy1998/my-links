@@ -19,14 +19,28 @@ jobs:
         registry: registry.cn-hangzhou.aliyuncs.com
         username: ${{ secrets.ACR_USERNAME }}
         password: ${{ secrets.ACR_PASSWORD }}
-
-    # 3. 构建并推送 Docker 镜像
-    - name: Build and Push Docker Image
+  # 构建前端镜像
+    - name: Build ui Image
       run: |
-        docker build -t your-app:${{ github.sha }} .
-        docker tag your-app:${{ github.sha }} registry.cn-hangzhou.aliyuncs.com/your-namespace/your-repo:${{ github.sha }}
-        docker push registry.cn-hangzhou.aliyuncs.com/your-namespace/your-repo:${{ github.sha }}
-
+        cd ui
+        docker build -t ${{ secrets.ACR_REGISTRY }}/${{ secrets.ACR_NAMESPACE }}/ui:${{ github.sha }} .
+        docker push ${{ secrets.ACR_REGISTRY }}/${{ secrets.ACR_NAMESPACE }}/ui:${{ github.sha }}
+      
+    # 构建后端镜像
+    - name: Build server Image
+      run: |
+        cd server
+        docker build -t ${{ secrets.ACR_REGISTRY }}/${{ secrets.ACR_NAMESPACE }}/server:${{ github.sha }} .
+        docker push ${{ secrets.ACR_REGISTRY }}/${{ secrets.ACR_NAMESPACE }}/server:${{ github.sha }}
+    # 部署脚本
+    - name: Sync deployment scripts
+      uses: appleboy/scp-action@v0.1.3
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        source: "scripts/*"       # 同步scripts目录
+        target: "/app/deploy/"    # 目标位置
     # 4. 通过 SSH 部署到 ECS
     - name: Deploy to ECS
       uses: appleboy/ssh-action@v1
@@ -36,4 +50,4 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
-            "bash /app/deploy/deploy.sh ${{ github.sha }}"
+            "bash app/deploy/deploy.sh ${{ github.sha }}"
