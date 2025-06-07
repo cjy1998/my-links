@@ -1,0 +1,24 @@
+version: "3.8"
+
+services:
+  frontend:
+    image: ${{ secrets.ACR_REGISTRY }}/${{ secrets.ACR_NAMESPACE }}/ui:$TAG
+    container_name: frontend-container
+    ports:
+      - "${FRONTEND_PORT}:80"
+    restart: always
+    env_file:
+      - /app/config/frontend.env
+  backend:
+    image: ${{ secrets.ACR_REGISTRY }}/${{ secrets.ACR_NAMESPACE }}/server:$TAG
+    container_name: backend-container
+    ports:
+      - "${BACKEND_PORT}:3000"
+    volumes:
+      - backend-data:/data
+    restart: always
+    env_file:
+      - /app/config/backend.env
+
+volumes:
+  backend-data:
