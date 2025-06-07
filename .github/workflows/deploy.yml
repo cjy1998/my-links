@@ -24,15 +24,15 @@ jobs:
       - name: Build ui Image
         run: |
           cd ui
-          docker build -t ${{ secrets.ACR_REGISTRY }}/${{ secrets.ACR_NAMESPACE }}/ui:${{ github.sha }} .
-          docker push ${{ secrets.ACR_REGISTRY }}/${{ secrets.ACR_NAMESPACE }}/ui:${{ github.sha }}
+          docker build -t ${{ secrets.ACR_REGISTRY }}/${{ secrets.ACR_NAMESPACE }}ui:${{ github.sha }} .
+          docker push ${{ secrets.ACR_REGISTRY }}/${{ secrets.ACR_NAMESPACE }}ui:${{ github.sha }}
 
       # 构建后端镜像
       - name: Build server Image
         run: |
           cd server
-          docker build -t ${{ secrets.ACR_REGISTRY }}/${{ secrets.ACR_NAMESPACE }}/server:${{ github.sha }} .
-          docker push ${{ secrets.ACR_REGISTRY }}/${{ secrets.ACR_NAMESPACE }}/server:${{ github.sha }}
+          docker build -t ${{ secrets.ACR_REGISTRY }}/${{ secrets.ACR_NAMESPACE }}server:${{ github.sha }} .
+          docker push ${{ secrets.ACR_REGISTRY }}/${{ secrets.ACR_NAMESPACE }}server:${{ github.sha }}
       # 部署脚本
       - name: Sync deployment scripts
         uses: appleboy/scp-action@v0.1.3
