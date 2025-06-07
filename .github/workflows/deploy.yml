@@ -16,7 +16,7 @@ jobs:
       - name: Setup Docker mirror
         run: |
           echo '{
-            "registry-mirrors": ["https://docker.1ms.run","https://docker.xuanyuan.me"]
+            "registry-mirrors": ["https://5u2xs3e2.mirror.aliyuncs.com","https://docker.xuanyuan.me"]
           }' | sudo tee /etc/docker/daemon.json
           sudo systemctl restart docker || true
       # 3. 登录阿里云容器镜像服务
