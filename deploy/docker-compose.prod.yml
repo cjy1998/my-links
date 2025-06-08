@@ -5,7 +5,7 @@ services:
     image: ${ACR_REGISTRY}/${ACR_NAMESPACE}/ui:$TAG
     container_name: frontend-container
     ports:
-      - "${FRONTEND_PORT}:80"
+      - 80
     restart: always
     env_file:
       - /app/config/frontend.env
@@ -16,7 +16,7 @@ services:
     image: ${ACR_REGISTRY}/${ACR_NAMESPACE}/server:$TAG
     container_name: backend-container
     ports:
-      - "${BACKEND_PORT}:3000"
+      - 3000
     volumes:
       - backend-data:/data
     restart: always
