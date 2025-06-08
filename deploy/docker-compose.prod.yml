@@ -15,7 +15,7 @@ services:
     # volumes:
     #   - frontend-data:/dist
     #   # 将静态文件挂载到共享卷
-    command: ["nginx", "-g", "daemon off;"]
+    # command: ["nginx", "-g", "daemon off;"]
   backend:
     image: ${ACR_REGISTRY}/${ACR_NAMESPACE}/server:$TAG
     container_name: backend-container
