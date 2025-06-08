@@ -62,17 +62,8 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "scripts/*" # 同步scripts目录
+          source: "scripts/*,deploy/docker-compose.prod.yml" # 同步scripts目录,docker-compose
           target: "/app/deploy/" # 目标位置
-        # 6.部署docker-compose
-      - name: Sync docker-compose
-        uses: appleboy/scp-action@v0.1.3
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "deploy/docker-compose.prod.yml" # docker-compose
-          target: "/app/" # docker-compose
       # 7. 通过 SSH 部署到 ECS
       - name: Deploy to ECS
         uses: appleboy/ssh-action@v1
