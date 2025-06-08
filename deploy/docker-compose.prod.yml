@@ -11,7 +11,8 @@ services:
       - /app/config/frontend.env
         # 绑定宿主机目录
     volumes:
-      - /server/data/frontend/dist:/dist
+      - /server/data/frontend/dist:/usr/share/nginx/html # 匹配Nginx默认路径
+    command: ["nginx", "-g", "daemon off;"] # 确保命令存在
     # volumes:
     #   - frontend-data:/dist
     #   # 将静态文件挂载到共享卷
