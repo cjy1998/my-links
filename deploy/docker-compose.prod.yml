@@ -15,7 +15,6 @@ services:
     # volumes:
     #   - frontend-data:/dist
     #   # 将静态文件挂载到共享卷
-    command: ["tail", "-f", "/dev/null"] # 保持容器运行但不提供服务
   backend:
     image: ${ACR_REGISTRY}/${ACR_NAMESPACE}/server:$TAG
     container_name: backend-container
