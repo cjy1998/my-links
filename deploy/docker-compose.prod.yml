@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   frontend:
-    image: ${ACR_REGISTRY }/${ACR_NAMESPACE }/ui:$TAG
+    image: ${ACR_REGISTRY}/${ACR_NAMESPACE}/ui:$TAG
     container_name: frontend-container
     ports:
       - "${FRONTEND_PORT}:80"
@@ -13,7 +13,7 @@ services:
       - frontend-data:/dist # 将静态文件挂载到共享卷
     command: ["sh", "-c", "tail -f /dev/null"] # 保持容器运行但不提供服务
   backend:
-    image: ${ACR_REGISTRY }/${ACR_NAMESPACE }/server:$TAG
+    image: ${ACR_REGISTRY}/${ACR_NAMESPACE}/server:$TAG
     container_name: backend-container
     ports:
       - "${BACKEND_PORT}:3000"
