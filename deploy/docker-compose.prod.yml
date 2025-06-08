@@ -9,7 +9,8 @@ services:
     restart: always
     env_file:
       - /app/config/frontend.env
-        # 绑定宿主机目录（推荐）
+        # 绑定宿主机目录
+    volumes:
       - /server/data/frontend/dist:/dist
     # volumes:
     #   - frontend-data:/dist
