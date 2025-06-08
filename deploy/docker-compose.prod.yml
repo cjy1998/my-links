@@ -9,20 +9,24 @@ services:
     restart: always
     env_file:
       - /app/config/frontend.env
-    volumes:
-      - frontend-data:/dist # 将静态文件挂载到共享卷
-    command: ["sh", "-c", "tail -f /dev/null"] # 保持容器运行但不提供服务
+        # 绑定宿主机目录（推荐）
+      - /server/data/frontend/dist:/dist
+    # volumes:
+    #   - frontend-data:/dist
+    #   # 将静态文件挂载到共享卷
+    command: ["tail", "-f", "/dev/null"] # 保持容器运行但不提供服务
   backend:
     image: ${ACR_REGISTRY}/${ACR_NAMESPACE}/server:$TAG
     container_name: backend-container
     ports:
       - 3000
+    # volumes:
+    #   - backend-data:/data
     volumes:
-      - backend-data:/data
+      - /server/data/backend:/data
     restart: always
     env_file:
       - /app/config/backend.env
-
-volumes:
-  backend-data:
-  frontend-data:
+# volumes:
+#   backend-data:
+#   frontend-data:
