@@ -14,6 +14,6 @@ RUN yarn build
 
 # 生产阶段 - 使用Nginx
 FROM nginx:alpine
-COPY --from=build /app/dist /usr/share/nginx/html  # 重要：Nginx默认静态文件路径
+COPY --from=build /dist /usr/share/nginx/html  # 重要：Nginx默认静态文件路径
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]  # 保持前台运行
