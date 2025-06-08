@@ -72,17 +72,23 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            # 确保脚本可执行
-            chmod +x /app/deploy/scripts/deploy.sh
+            # 设置环境变量
+             export ACR_REGISTRY="${{ secrets.ACR_REGISTRY }}"
+             export ACR_NAMESPACE="${{ secrets.ACR_NAMESPACE }}"
+             # 确保脚本可执行
+             chmod +x /app/deploy/scripts/deploy.sh
 
-            # 添加调试信息
-            echo "当前目录: $(pwd)"
-            echo "脚本路径: /app/deploy/scripts/deploy.sh"
-            ls -la /app/deploy/scripts
+             # 添加调试信息
+             echo "当前目录: $(pwd)"
+             echo "脚本路径: /app/deploy/scripts/deploy.sh"
+             ls -la /app/deploy/scripts
 
-            # 执行部署脚本
-            /app/deploy/scripts/deploy.sh ${{ github.sha }}
+             # 执行部署脚本
+            /app/deploy/scripts/deploy.sh \
+             "${{ github.sha }}" \
+             "$ACR_REGISTRY" \
+             "$ACR_NAMESPACE" 
 
-            # 验证部署结果
-            docker ps -a
-            curl -I http://localhost:80
+             # 验证部署结果
+             docker ps -a
+             curl -I http://localhost:80
