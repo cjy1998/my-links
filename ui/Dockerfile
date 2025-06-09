@@ -21,11 +21,6 @@ RUN mkdir -p /usr/share/nginx/html
 # 复制构建产物
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# 调试：确认复制构建产物
-RUN echo "复制构建产物验证:" && \
-    ls -l && \
-    # [ -d "dist" ] && echo "dist 目录存在" || echo "错误: dist 目录不存在!" && \
-    ls -l /usr/share/nginx/html
 # 可选：自定义 Nginx 配置
 # COPY nginx.conf /etc/nginx/conf.d/default.conf
 
