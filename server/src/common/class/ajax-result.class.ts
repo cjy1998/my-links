@@ -26,6 +26,8 @@ export class AjaxResult {
     } else {
       newData = data;
     }
+    // console.log(value);
+
     return new AjaxResult(200, msg, newData);
   }
 

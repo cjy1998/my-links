@@ -4,8 +4,8 @@
  * @LastEditors: JiangSheng 87789771@qq.com
  * @LastEditTime: 2024-04-30 14:31:15
  * @FilePath: \meimei-new\src\common\interceptors\reponse-transform.interceptor.ts
- * @Description: 
- * 
+ * @Description:
+ *
  */
 import {
   Injectable,
