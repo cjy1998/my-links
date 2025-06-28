@@ -1,6 +1,8 @@
 # 构建阶段
 FROM node:20-alpine3.20 AS build
 
+# 安装 pnpm
+RUN corepack enable && corepack prepare pnpm@latest --activate
 # 声明构建参数（可设置默认值）
 # ARG VITE_APP_TITLE="管理系统"
 # ARG VITE_APP_ENV=production
