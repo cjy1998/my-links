@@ -15,10 +15,10 @@ FROM node:20-alpine3.20 AS build
 # ENV VITE_BUILD_COMPRESS=${VITE_BUILD_COMPRESS}
 
 WORKDIR /app
-COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install
 COPY . .
-RUN yarn build
+RUN pnpm build
 
 # 调试：确认构建输出
 RUN echo "构建输出验证:" && \
