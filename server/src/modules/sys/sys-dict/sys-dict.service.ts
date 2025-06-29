@@ -107,6 +107,7 @@ export class SysDictService {
   /* 通过字典类型获取字典值 */
   async getDictDataByDictType(dictType: string) {
     const dictDataString = await this.redis.get(`${DICTTYPE_KEY}:${dictType}`);
+    console.log(dictDataString);
     if (dictDataString) {
       return JSON.parse(dictDataString);
     }

@@ -5,13 +5,14 @@ import React from 'react';
 const Footer: React.FC = () => {
   return (
     <DefaultFooter
+      copyright={false}//移除版权符号
       style={{
         background: 'none',
       }}
       links={[
         {
           key: 'Ant Design Pro',
-          title: 'Ant Design Pro',
+          title: 'Ant Design Pro222',
           href: 'https://pro.ant.design',
           blankTarget: true,
         },

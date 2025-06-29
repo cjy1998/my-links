@@ -336,7 +336,9 @@ const UserTableList: React.FC = () => {
       {contextHolder}
       <Row gutter={[16, 24]}>
         <Col lg={6} md={24}>
-          <Card>
+          <Card style={{
+            height: '100%',
+          }}>
             <DeptTree
               onSelect={async (value: any) => {
                 setSelectDept(value);
