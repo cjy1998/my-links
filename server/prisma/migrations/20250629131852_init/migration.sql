@@ -9,26 +9,22 @@ CREATE TABLE `sys_web` (
     `sidebarLogo` BOOLEAN NULL,
     `dynamicTitle` BOOLEAN NULL,
     `createBy` VARCHAR(64) NOT NULL,
-    `createTime` DATETIME(3) NULL,
+    `createTime` DATETIME(0) NULL,
     `updateBy` VARCHAR(64) NULL DEFAULT '',
-    `updateTime` DATETIME(3) NULL,
-
+    `updateTime` DATETIME(0) NULL,
     UNIQUE INDEX `sys_web_createBy_key`(`createBy`),
     PRIMARY KEY (`webId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
 -- CreateTable
 CREATE TABLE `sys_table` (
     `tableId` VARCHAR(100) NOT NULL,
     `createBy` VARCHAR(64) NOT NULL,
-    `createTime` DATETIME(3) NULL,
+    `createTime` DATETIME(0) NULL,
     `updateBy` VARCHAR(64) NULL DEFAULT '',
-    `updateTime` DATETIME(3) NULL,
+    `updateTime` DATETIME(0) NULL,
     `tableJsonConfig` TEXT NULL,
-
     PRIMARY KEY (`tableId`, `createBy`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
 -- CreateTable
 CREATE TABLE `sys_config` (
     `configId` INTEGER NOT NULL AUTO_INCREMENT,
@@ -37,15 +33,13 @@ CREATE TABLE `sys_config` (
     `configValue` VARCHAR(500) NULL DEFAULT '',
     `configType` CHAR(1) NULL DEFAULT 'N',
     `createBy` VARCHAR(64) NULL DEFAULT '',
-    `createTime` DATETIME(3) NULL,
+    `createTime` DATETIME(0) NULL,
     `updateBy` VARCHAR(64) NULL DEFAULT '',
-    `updateTime` DATETIME(3) NULL,
+    `updateTime` DATETIME(0) NULL,
     `remark` VARCHAR(500) NULL,
-
     UNIQUE INDEX `sys_config_configKey_key`(`configKey`),
     PRIMARY KEY (`configId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
 -- CreateTable
 CREATE TABLE `sys_dept` (
     `deptId` INTEGER NOT NULL AUTO_INCREMENT,
@@ -59,13 +53,12 @@ CREATE TABLE `sys_dept` (
     `status` CHAR(1) NULL DEFAULT '0',
     `delFlag` CHAR(1) NULL DEFAULT '0',
     `createBy` VARCHAR(64) NULL DEFAULT '',
-    `createTime` DATETIME(3) NULL,
+    `createTime` DATETIME(0) NULL,
     `updateBy` VARCHAR(64) NULL DEFAULT '',
-    `updateTime` DATETIME(3) NULL,
-
+    `updateTime` DATETIME(0) NULL,
+    INDEX `sys_dept_parentId_fkey`(`parentId`),
     PRIMARY KEY (`deptId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
 -- CreateTable
 CREATE TABLE `sys_dict_data` (
     `dictCode` INTEGER NOT NULL AUTO_INCREMENT,
@@ -78,15 +71,13 @@ CREATE TABLE `sys_dict_data` (
     `isDefault` CHAR(1) NULL DEFAULT 'N',
     `status` CHAR(1) NULL DEFAULT '0',
     `createBy` VARCHAR(64) NULL DEFAULT '',
-    `createTime` DATETIME(3) NULL,
+    `createTime` DATETIME(0) NULL,
     `updateBy` VARCHAR(64) NULL DEFAULT '',
-    `updateTime` DATETIME(3) NULL,
+    `updateTime` DATETIME(0) NULL,
     `remark` VARCHAR(500) NULL,
-
     INDEX `sys_dict_data_dictType_fkey`(`dictType`),
     PRIMARY KEY (`dictCode`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
 -- CreateTable
 CREATE TABLE `sys_dict_type` (
     `dictId` INTEGER NOT NULL AUTO_INCREMENT,
@@ -94,15 +85,13 @@ CREATE TABLE `sys_dict_type` (
     `dictType` VARCHAR(100) NULL DEFAULT '',
     `status` CHAR(1) NULL DEFAULT '0',
     `createBy` VARCHAR(64) NULL DEFAULT '',
-    `createTime` DATETIME(3) NULL,
+    `createTime` DATETIME(0) NULL,
     `updateBy` VARCHAR(64) NULL DEFAULT '',
-    `updateTime` DATETIME(3) NULL,
+    `updateTime` DATETIME(0) NULL,
     `remark` VARCHAR(500) NULL,
-
     UNIQUE INDEX `dictType`(`dictType`),
     PRIMARY KEY (`dictId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
 -- CreateTable
 CREATE TABLE `sys_job` (
     `jobId` INTEGER NOT NULL AUTO_INCREMENT,
@@ -114,14 +103,12 @@ CREATE TABLE `sys_job` (
     `concurrent` CHAR(1) NULL DEFAULT '1',
     `status` CHAR(1) NULL DEFAULT '0',
     `createBy` VARCHAR(64) NULL DEFAULT '',
-    `createTime` DATETIME(3) NULL,
+    `createTime` DATETIME(0) NULL,
     `updateBy` VARCHAR(64) NULL DEFAULT '',
-    `updateTime` DATETIME(3) NULL,
+    `updateTime` DATETIME(0) NULL,
     `remark` VARCHAR(500) NULL DEFAULT '',
-
     PRIMARY KEY (`jobId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
 -- CreateTable
 CREATE TABLE `sys_job_log` (
     `jobLogId` INTEGER NOT NULL AUTO_INCREMENT,
@@ -131,11 +118,9 @@ CREATE TABLE `sys_job_log` (
     `jobMessage` VARCHAR(500) NULL,
     `status` CHAR(1) NULL DEFAULT '0',
     `exceptionInfo` VARCHAR(2000) NULL DEFAULT '',
-    `createTime` DATETIME(3) NULL,
-
+    `createTime` DATETIME(0) NULL,
     PRIMARY KEY (`jobLogId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
 -- CreateTable
 CREATE TABLE `sys_login_infor` (
     `infoId` INTEGER NOT NULL AUTO_INCREMENT,
@@ -146,13 +131,11 @@ CREATE TABLE `sys_login_infor` (
     `os` VARCHAR(50) NULL DEFAULT '',
     `status` CHAR(1) NULL DEFAULT '0',
     `msg` VARCHAR(255) NULL DEFAULT '',
-    `loginTime` DATETIME(3) NULL,
-
+    `loginTime` DATETIME(0) NULL,
     INDEX `idxSysLogininforLt`(`loginTime`),
     INDEX `idxSysLogininforS`(`status`),
     PRIMARY KEY (`infoId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
 -- CreateTable
 CREATE TABLE `sys_menu` (
     `menuId` INTEGER NOT NULL AUTO_INCREMENT,
@@ -170,14 +153,13 @@ CREATE TABLE `sys_menu` (
     `perms` VARCHAR(100) NULL,
     `icon` VARCHAR(100) NULL DEFAULT '#',
     `createBy` VARCHAR(64) NULL DEFAULT '',
-    `createTime` DATETIME(3) NULL,
+    `createTime` DATETIME(0) NULL,
     `updateBy` VARCHAR(64) NULL DEFAULT '',
-    `updateTime` DATETIME(3) NULL,
+    `updateTime` DATETIME(0) NULL,
     `remark` VARCHAR(500) NULL DEFAULT '',
-
+    INDEX `sys_menu_parentId_fkey`(`parentId`),
     PRIMARY KEY (`menuId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
 -- CreateTable
 CREATE TABLE `sys_notice` (
     `noticeId` INTEGER NOT NULL AUTO_INCREMENT,
@@ -186,14 +168,12 @@ CREATE TABLE `sys_notice` (
     `noticeContent` LONGBLOB NULL,
     `status` CHAR(1) NULL DEFAULT '0',
     `createBy` VARCHAR(64) NULL DEFAULT '',
-    `createTime` DATETIME(3) NULL,
+    `createTime` DATETIME(0) NULL,
     `updateBy` VARCHAR(64) NULL DEFAULT '',
-    `updateTime` DATETIME(3) NULL,
+    `updateTime` DATETIME(0) NULL,
     `remark` VARCHAR(255) NULL,
-
     PRIMARY KEY (`noticeId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
 -- CreateTable
 CREATE TABLE `sys_oper_log` (
     `operId` INTEGER NOT NULL AUTO_INCREMENT,
@@ -211,15 +191,13 @@ CREATE TABLE `sys_oper_log` (
     `jsonResult` TEXT NULL,
     `status` CHAR(1) NULL DEFAULT '0',
     `errorMsg` TEXT NULL,
-    `operTime` DATETIME(3) NULL,
+    `operTime` DATETIME(0) NULL,
     `costTime` INTEGER NULL DEFAULT 0,
-
     INDEX `idxSysOperLogBt`(`businessType`),
     INDEX `idxSysOperLogOt`(`operTime`),
     INDEX `idxSysOperLogS`(`status`),
     PRIMARY KEY (`operId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
 -- CreateTable
 CREATE TABLE `sys_post` (
     `postId` INTEGER NOT NULL AUTO_INCREMENT,
@@ -228,20 +206,18 @@ CREATE TABLE `sys_post` (
     `postSort` INTEGER NOT NULL,
     `status` CHAR(1) NOT NULL,
     `createBy` VARCHAR(64) NULL DEFAULT '',
-    `createTime` DATETIME(3) NULL,
+    `createTime` DATETIME(0) NULL,
     `updateBy` VARCHAR(64) NULL DEFAULT '',
-    `updateTime` DATETIME(3) NULL,
+    `updateTime` DATETIME(0) NULL,
     `remark` VARCHAR(500) NULL,
-
     UNIQUE INDEX `sys_post_postCode_key`(`postCode`),
     PRIMARY KEY (`postId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
 -- CreateTable
 CREATE TABLE `sys_role` (
     `roleId` INTEGER NOT NULL AUTO_INCREMENT,
     `createBy` VARCHAR(64) NULL DEFAULT '',
-    `createTime` DATETIME(3) NULL,
+    `createTime` DATETIME(0) NULL,
     `dataScope` CHAR(4) NULL DEFAULT '4',
     `delFlag` CHAR(1) NULL DEFAULT '0',
     `deptCheckStrictly` BOOLEAN NULL DEFAULT true,
@@ -252,21 +228,19 @@ CREATE TABLE `sys_role` (
     `roleSort` INTEGER NOT NULL,
     `status` CHAR(1) NOT NULL,
     `updateBy` VARCHAR(64) NULL DEFAULT '',
-    `updateTime` DATETIME(3) NULL,
-
+    `updateTime` DATETIME(0) NULL,
     PRIMARY KEY (`roleId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
 -- CreateTable
 CREATE TABLE `sys_user` (
     `userId` INTEGER NOT NULL AUTO_INCREMENT,
     `avatar` VARCHAR(100) NULL DEFAULT '',
     `createBy` VARCHAR(64) NULL DEFAULT '',
-    `createTime` DATETIME(3) NULL,
+    `createTime` DATETIME(0) NULL,
     `delFlag` CHAR(1) NULL DEFAULT '0',
     `deptId` INTEGER NULL,
     `email` VARCHAR(50) NULL DEFAULT '',
-    `loginDate` DATETIME(3) NULL,
+    `loginDate` DATETIME(0) NULL,
     `loginIp` VARCHAR(128) NULL DEFAULT '',
     `nickName` VARCHAR(30) NOT NULL,
     `password` VARCHAR(100) NULL DEFAULT '',
@@ -275,20 +249,18 @@ CREATE TABLE `sys_user` (
     `sex` CHAR(1) NULL DEFAULT '0',
     `status` CHAR(1) NULL DEFAULT '0',
     `updateBy` VARCHAR(64) NULL DEFAULT '',
-    `updateTime` DATETIME(3) NULL,
+    `updateTime` DATETIME(0) NULL,
     `userName` VARCHAR(30) NOT NULL,
     `userType` VARCHAR(2) NULL DEFAULT '00',
-
     UNIQUE INDEX `sys_user_userName_key`(`userName`),
     INDEX `sys_user_deptId_fkey`(`deptId`),
     PRIMARY KEY (`userId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
 -- CreateTable
 CREATE TABLE `customer` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(30) NULL DEFAULT '',
-    `orderNo` BIGINT NULL,
+    `orderNo` VARCHAR(30) NULL DEFAULT '',
     `orderStatus` CHAR(1) NULL DEFAULT '0',
     `orderCreateTime` DATETIME(3) NULL,
     `shopAllPrice` INTEGER NULL,
@@ -302,79 +274,105 @@ CREATE TABLE `customer` (
     `buyName` VARCHAR(30) NULL DEFAULT '',
     `buyPhone` VARCHAR(11) NULL DEFAULT '',
     `buyAddress` VARCHAR(255) NULL DEFAULT '',
-
+    `createBy` VARCHAR(64) NULL DEFAULT '',
+    `createTime` DATETIME(3) NULL,
+    `delFlag` CHAR(1) NULL DEFAULT '0',
+    `remark` VARCHAR(500) NULL,
+    `updateBy` VARCHAR(64) NULL DEFAULT '',
+    `updateTime` DATETIME(3) NULL,
     INDEX `customer_orderNo_idx`(`orderNo`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
+-- CreateTable
+CREATE TABLE `reason` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `name` VARCHAR(30) NULL DEFAULT '',
+    `remark` VARCHAR(500) NULL,
+    `createBy` VARCHAR(64) NULL DEFAULT '',
+    `createTime` DATETIME(3) NULL,
+    `delFlag` CHAR(1) NULL DEFAULT '0',
+    `updateBy` VARCHAR(64) NULL DEFAULT '',
+    `updateTime` DATETIME(3) NULL,
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 -- CreateTable
 CREATE TABLE `_sys_dept_to_sys_role` (
     `A` INTEGER NOT NULL,
     `B` INTEGER NOT NULL,
-
     UNIQUE INDEX `_sys_dept_to_sys_role_AB_unique`(`A`, `B`),
     INDEX `_sys_dept_to_sys_role_B_index`(`B`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
 -- CreateTable
 CREATE TABLE `_sys_menu_to_sys_role` (
     `A` INTEGER NOT NULL,
     `B` INTEGER NOT NULL,
-
     UNIQUE INDEX `_sys_menu_to_sys_role_AB_unique`(`A`, `B`),
     INDEX `_sys_menu_to_sys_role_B_index`(`B`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
 -- CreateTable
 CREATE TABLE `_sys_post_to_sys_user` (
     `A` INTEGER NOT NULL,
     `B` INTEGER NOT NULL,
-
     UNIQUE INDEX `_sys_post_to_sys_user_AB_unique`(`A`, `B`),
     INDEX `_sys_post_to_sys_user_B_index`(`B`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
 -- CreateTable
 CREATE TABLE `_sys_role_to_sys_user` (
     `A` INTEGER NOT NULL,
     `B` INTEGER NOT NULL,
-
     UNIQUE INDEX `_sys_role_to_sys_user_AB_unique`(`A`, `B`),
     INDEX `_sys_role_to_sys_user_B_index`(`B`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
+-- CreateTable
+CREATE TABLE `_CustomerToReason` (
+    `A` INTEGER NOT NULL,
+    `B` INTEGER NOT NULL,
+    UNIQUE INDEX `_CustomerToReason_AB_unique`(`A`, `B`),
+    INDEX `_CustomerToReason_B_index`(`B`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 -- AddForeignKey
-ALTER TABLE `sys_dept` ADD CONSTRAINT `sys_dept_parentId_fkey` FOREIGN KEY (`parentId`) REFERENCES `sys_dept`(`deptId`) ON DELETE SET NULL ON UPDATE CASCADE;
-
+ALTER TABLE `sys_dept`
+ADD CONSTRAINT `sys_dept_parentId_fkey` FOREIGN KEY (`parentId`) REFERENCES `sys_dept`(`deptId`) ON DELETE
+SET NULL ON UPDATE CASCADE;
 -- AddForeignKey
-ALTER TABLE `sys_dict_data` ADD CONSTRAINT `sys_dict_data_dictType_fkey` FOREIGN KEY (`dictType`) REFERENCES `sys_dict_type`(`dictType`) ON DELETE SET NULL ON UPDATE CASCADE;
-
+ALTER TABLE `sys_dict_data`
+ADD CONSTRAINT `sys_dict_data_dictType_fkey` FOREIGN KEY (`dictType`) REFERENCES `sys_dict_type`(`dictType`) ON DELETE
+SET NULL ON UPDATE CASCADE;
 -- AddForeignKey
-ALTER TABLE `sys_menu` ADD CONSTRAINT `sys_menu_parentId_fkey` FOREIGN KEY (`parentId`) REFERENCES `sys_menu`(`menuId`) ON DELETE SET NULL ON UPDATE CASCADE;
-
+ALTER TABLE `sys_menu`
+ADD CONSTRAINT `sys_menu_parentId_fkey` FOREIGN KEY (`parentId`) REFERENCES `sys_menu`(`menuId`) ON DELETE
+SET NULL ON UPDATE CASCADE;
 -- AddForeignKey
-ALTER TABLE `sys_user` ADD CONSTRAINT `sys_user_deptId_fkey` FOREIGN KEY (`deptId`) REFERENCES `sys_dept`(`deptId`) ON DELETE SET NULL ON UPDATE CASCADE;
-
+ALTER TABLE `sys_user`
+ADD CONSTRAINT `sys_user_deptId_fkey` FOREIGN KEY (`deptId`) REFERENCES `sys_dept`(`deptId`) ON DELETE
+SET NULL ON UPDATE CASCADE;
 -- AddForeignKey
-ALTER TABLE `_sys_dept_to_sys_role` ADD CONSTRAINT `_sys_dept_to_sys_role_A_fkey` FOREIGN KEY (`A`) REFERENCES `sys_dept`(`deptId`) ON DELETE CASCADE ON UPDATE CASCADE;
-
+ALTER TABLE `_sys_dept_to_sys_role`
+ADD CONSTRAINT `_sys_dept_to_sys_role_A_fkey` FOREIGN KEY (`A`) REFERENCES `sys_dept`(`deptId`) ON DELETE CASCADE ON UPDATE CASCADE;
 -- AddForeignKey
-ALTER TABLE `_sys_dept_to_sys_role` ADD CONSTRAINT `_sys_dept_to_sys_role_B_fkey` FOREIGN KEY (`B`) REFERENCES `sys_role`(`roleId`) ON DELETE CASCADE ON UPDATE CASCADE;
-
+ALTER TABLE `_sys_dept_to_sys_role`
+ADD CONSTRAINT `_sys_dept_to_sys_role_B_fkey` FOREIGN KEY (`B`) REFERENCES `sys_role`(`roleId`) ON DELETE CASCADE ON UPDATE CASCADE;
 -- AddForeignKey
-ALTER TABLE `_sys_menu_to_sys_role` ADD CONSTRAINT `_sys_menu_to_sys_role_A_fkey` FOREIGN KEY (`A`) REFERENCES `sys_menu`(`menuId`) ON DELETE CASCADE ON UPDATE CASCADE;
-
+ALTER TABLE `_sys_menu_to_sys_role`
+ADD CONSTRAINT `_sys_menu_to_sys_role_A_fkey` FOREIGN KEY (`A`) REFERENCES `sys_menu`(`menuId`) ON DELETE CASCADE ON UPDATE CASCADE;
 -- AddForeignKey
-ALTER TABLE `_sys_menu_to_sys_role` ADD CONSTRAINT `_sys_menu_to_sys_role_B_fkey` FOREIGN KEY (`B`) REFERENCES `sys_role`(`roleId`) ON DELETE CASCADE ON UPDATE CASCADE;
-
+ALTER TABLE `_sys_menu_to_sys_role`
+ADD CONSTRAINT `_sys_menu_to_sys_role_B_fkey` FOREIGN KEY (`B`) REFERENCES `sys_role`(`roleId`) ON DELETE CASCADE ON UPDATE CASCADE;
 -- AddForeignKey
-ALTER TABLE `_sys_post_to_sys_user` ADD CONSTRAINT `_sys_post_to_sys_user_A_fkey` FOREIGN KEY (`A`) REFERENCES `sys_post`(`postId`) ON DELETE CASCADE ON UPDATE CASCADE;
-
+ALTER TABLE `_sys_post_to_sys_user`
+ADD CONSTRAINT `_sys_post_to_sys_user_A_fkey` FOREIGN KEY (`A`) REFERENCES `sys_post`(`postId`) ON DELETE CASCADE ON UPDATE CASCADE;
 -- AddForeignKey
-ALTER TABLE `_sys_post_to_sys_user` ADD CONSTRAINT `_sys_post_to_sys_user_B_fkey` FOREIGN KEY (`B`) REFERENCES `sys_user`(`userId`) ON DELETE CASCADE ON UPDATE CASCADE;
-
+ALTER TABLE `_sys_post_to_sys_user`
+ADD CONSTRAINT `_sys_post_to_sys_user_B_fkey` FOREIGN KEY (`B`) REFERENCES `sys_user`(`userId`) ON DELETE CASCADE ON UPDATE CASCADE;
 -- AddForeignKey
-ALTER TABLE `_sys_role_to_sys_user` ADD CONSTRAINT `_sys_role_to_sys_user_A_fkey` FOREIGN KEY (`A`) REFERENCES `sys_role`(`roleId`) ON DELETE CASCADE ON UPDATE CASCADE;
-
+ALTER TABLE `_sys_role_to_sys_user`
+ADD CONSTRAINT `_sys_role_to_sys_user_A_fkey` FOREIGN KEY (`A`) REFERENCES `sys_role`(`roleId`) ON DELETE CASCADE ON UPDATE CASCADE;
 -- AddForeignKey
-ALTER TABLE `_sys_role_to_sys_user` ADD CONSTRAINT `_sys_role_to_sys_user_B_fkey` FOREIGN KEY (`B`) REFERENCES `sys_user`(`userId`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `_sys_role_to_sys_user`
+ADD CONSTRAINT `_sys_role_to_sys_user_B_fkey` FOREIGN KEY (`B`) REFERENCES `sys_user`(`userId`) ON DELETE CASCADE ON UPDATE CASCADE;
+-- AddForeignKey
+ALTER TABLE `_CustomerToReason`
+ADD CONSTRAINT `_CustomerToReason_A_fkey` FOREIGN KEY (`A`) REFERENCES `customer`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+-- AddForeignKey
+ALTER TABLE `_CustomerToReason`
+ADD CONSTRAINT `_CustomerToReason_B_fkey` FOREIGN KEY (`B`) REFERENCES `reason`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;

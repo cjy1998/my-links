@@ -1,7 +1,0 @@
--- AlterTable
-ALTER TABLE `customer` ADD COLUMN `createBy` VARCHAR(64) NULL DEFAULT '',
-    ADD COLUMN `createTime` DATETIME(3) NULL,
-    ADD COLUMN `delFlag` CHAR(1) NULL DEFAULT '0',
-    ADD COLUMN `remark` VARCHAR(500) NULL,
-    ADD COLUMN `updateBy` VARCHAR(64) NULL DEFAULT '',
-    ADD COLUMN `updateTime` DATETIME(3) NULL;
