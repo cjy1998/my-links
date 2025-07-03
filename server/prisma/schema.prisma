@@ -299,9 +299,32 @@ model SysUser {
   dept        SysDept?  @relation(fields: [deptId], references: [deptId])
   posts       SysPost[] @relation("sys_post_to_sys_user")
   roles       SysRole[] @relation("sys_role_to_sys_user")
-
+  /// 第三方登录用户表
+  socialAccounts SysSocialUser[]
   @@index([deptId], map: "sys_user_deptId_fkey")
   @@map("sys_user")
+}
+
+/// 第三方登录用户表
+model SysSocialUser {
+  socialId     Int      @id @default(autoincrement())
+  provider     String   @db.VarChar(20)  // 如 wechat/gitee/weibo
+  providerId   String   @db.VarChar(100) // 第三方平台用户ID
+  userId       Int      // 关联的系统用户ID
+  userName     String?  @db.VarChar(30)  // 冗余存储用户名
+  nickName     String?  @db.VarChar(30)  // 第三方平台昵称
+  avatar       String?  @db.VarChar(255) // 第三方平台头像
+  accessToken  String?  @db.VarChar(500)
+  expireTime   DateTime? // token过期时间
+  createTime   DateTime @default(now())
+  updateTime   DateTime @updatedAt
+  createBy     String?  @db.VarChar(64)
+  updateBy     String?  @db.VarChar(64)
+  remark       String?  @db.VarChar(500)
+  user         SysUser  @relation(fields: [userId], references: [userId])
+  @@unique([provider, providerId], name: "social_provider_unique")
+  @@index([userId], name: "social_userId_index")
+  @@map("sys_social_user")
 }
 
 // 客户资料表

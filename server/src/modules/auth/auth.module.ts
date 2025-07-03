@@ -13,11 +13,20 @@ import { AuthService } from './auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
 import { LoginModule } from '../login/login.module';
+import { WeChatStrategy } from './strategies/wechat.strategy';
+import { GiteeStrategy } from './strategies/gitee.strategy';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
-  imports: [PassportModule],
+  imports: [PassportModule,HttpModule],
   controllers: [],
-  providers: [AuthService, LocalStrategy, JwtStrategy],
+  providers: [
+    AuthService,
+    LocalStrategy,
+    JwtStrategy,
+    WeChatStrategy,
+    GiteeStrategy
+  ],
   exports: [AuthService],
 })
-export class AuthModule {}
+export class AuthModule { }

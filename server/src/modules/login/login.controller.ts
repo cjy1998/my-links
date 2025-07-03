@@ -16,6 +16,8 @@ import {
   UseGuards,
   Headers,
   Req,
+  Res,
+  Query,
 } from '@nestjs/common';
 import { Public } from 'src/common/decorators/public.decorator';
 import { User, UserEnum } from 'src/common/decorators/user.decorator';
@@ -26,9 +28,15 @@ import { LoginService } from './login.service';
 import { SysUser } from '@prisma/client';
 import { Request } from 'express';
 import { UserInfo } from 'src/common/type/user-info.type';
+import { AuthGuard } from '@nestjs/passport';
+import { AuthService } from '../auth/auth.service';
+import { Response } from 'express';
 @Controller()
 export class LoginController {
-  constructor(private readonly loginService: LoginService) {}
+  constructor(
+    private readonly loginService: LoginService,
+    private readonly authService: AuthService,
+  ) {}
 
   /* 获取图片验证码 */
   @Get('captchaImage')
@@ -78,6 +86,73 @@ export class LoginController {
     if (authorization) {
       const token = authorization.slice(7);
       await this.loginService.logout(token);
+    }
+  }
+
+  @Public()
+   @Get('wechat')
+   @UseGuards(AuthGuard('wechat'))
+  wechatLogin(@Res() res: Response) {
+    const authUrl = `https://open.weixin.qq.com/connect/qrconnect?appid=${process.env.WECHAT_APP_ID}&redirect_uri=${encodeURIComponent(process.env.WECHAT_CALLBACK_URL)}&response_type=code&scope=snsapi_login&state=STATE`;
+    res.redirect(authUrl);
+  }
+
+  // 微信登录回调
+  @Public()
+  @Get('wechat/callback')
+  @UseGuards(AuthGuard('wechat'))
+  async wechatCallback(
+    @Query('code') code: string,
+    @Query('state') state: string,
+    @Res() res: Response,
+  ) {
+    try {
+      const wechatUser = await this.authService.getWechatUser(code);
+      
+      const result = await this.authService.handleSocialLogin({
+        provider: 'wechat',
+        providerId: wechatUser.openid,
+        nickName: wechatUser.nickname,
+        avatar: wechatUser.headimgurl,
+      });
+
+      res.redirect(`${process.env.FRONTEND_URL}/login?token=${result.token}`);
+    } catch (error) {
+      res.redirect(`${process.env.FRONTEND_URL}/login?error=${error.message}`);
+    }
+  }
+
+  // Gitee登录跳转
+  @Public()
+  @Get('gitee')
+  @UseGuards(AuthGuard('gitee'))
+  giteeLogin(@Res() res: Response) {
+    const authUrl = `https://gitee.com/oauth/authorize?client_id=${process.env.GITEE_CLIENT_ID}&redirect_uri=${encodeURIComponent(process.env.GITEE_CALLBACK_URL)}&response_type=code`;
+    res.redirect(authUrl);
+  }
+
+  // Gitee登录回调
+  @Public()
+  @Get('gitee/callback')
+  @UseGuards(AuthGuard('gitee'))
+  async giteeCallback(
+    @Query('code') code: string,
+    @Res() res: Response,
+  ) {
+    try {
+      const giteeUser = await this.authService.getGiteeUser(code);
+      
+      const result = await this.authService.handleSocialLogin({
+        provider: 'gitee',
+        providerId: giteeUser.id,
+        nickName: giteeUser.name,
+        avatar: giteeUser.avatar_url,
+        email: giteeUser.email,
+      });
+
+      res.redirect(`${process.env.FRONTEND_URL}/login?token=${result.token}`);
+    } catch (error) {
+      res.redirect(`${process.env.FRONTEND_URL}/login?error=${error.message}`);
     }
   }
 }
