@@ -1,12 +1,3 @@
-/*
- * @Author: jiang.sheng 87789771@qq.com
- * @Date: 2024-05-12 17:35:00
- * @LastEditors: jiang.sheng 87789771@qq.com
- * @LastEditTime: 2024-05-16 21:10:31
- * @FilePath: /meimei-new/src/modules/sys/sys-dept/sys-dept.controller.ts
- * @Description:
- *
- */
 import {
   Body,
   Controller,
@@ -31,11 +22,15 @@ import {
 } from './dto/req-sys-dept.dto';
 import { User, UserEnum } from 'src/common/decorators/user.decorator';
 import { DataScope } from 'src/common/type/data-scope.type';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('部门管理')
 @Controller('system/dept')
 export class SysDeptController {
   constructor(private readonly sysDeptService: SysDeptService) {}
-  /* 新增 */
+  /**
+   * 新增
+   */
   @Post()
   @RepeatSubmit()
   @Log({
@@ -47,7 +42,9 @@ export class SysDeptController {
     await this.sysDeptService.add(addSysDeptDto);
   }
 
-  /* 列表查询 */
+  /**
+   * 列表查询
+   */
   @Get('list')
   @RequiresPermissions('system:dept:query')
   async list(
@@ -57,14 +54,18 @@ export class SysDeptController {
     return await this.sysDeptService.list(getSysDeptListDto, dataScope);
   }
 
-  /* 查询出去这个id及其子部门外的其他部门 */
+  /**
+   * 查询除去这个id及其子部门外的其他部门
+   */
   @Get('list/exclude/:deptId')
   @RequiresPermissions('system:dept:edit')
   async listExclude(@Param('deptId') deptId: number) {
     return await this.sysDeptService.listExclude(deptId);
   }
 
-  /* 通过id查询 */
+  /**
+   * 通过id查询
+   */
   @Get(':deptId')
   @RequiresPermissions('system:dept:query')
   async oneByDeptId(@Param('deptId') deptId: number) {
@@ -72,7 +73,9 @@ export class SysDeptController {
     return DataObj.create(post);
   }
 
-  /* 更新 */
+  /**
+   * 更新
+   */
   @Put()
   @RepeatSubmit()
   @RequiresPermissions('system:dept:edit')
@@ -84,7 +87,9 @@ export class SysDeptController {
     await this.sysDeptService.update(updateSysDeptDto);
   }
 
-  /* 删除 */
+  /**
+   * 删除
+   */
   @Delete(':deptIds')
   @RequiresPermissions('system:dept:remove')
   @Log({

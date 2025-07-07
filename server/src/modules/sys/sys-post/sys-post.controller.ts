@@ -26,14 +26,17 @@ import { UpdateMessagePipe } from 'src/common/pipes/updatemessage.pipe';
 import { Keep } from 'src/common/decorators/keep.decorator';
 import { ExcelService } from 'src/modules/common/excel/excel.service';
 import { ExportSysPostDto } from './dto/res-sys-post.dto';
-
+import { ApiTags } from '@nestjs/swagger';
+@ApiTags('岗位管理')
 @Controller('system/post')
 export class SysPostController {
   constructor(
     private readonly sysPostService: SysPostService,
     private readonly excelService: ExcelService,
   ) {}
-  /* 新增 */
+  /**
+   * 新增
+   */
   @Post()
   @RepeatSubmit()
   @Log({
@@ -45,14 +48,18 @@ export class SysPostController {
     await this.sysPostService.add(addSysPostDto);
   }
 
-  /* 分页查询 */
+  /**
+   * 分页查询
+   */
   @Get('list')
   @RequiresPermissions('system:post:query')
   async list(@Query(PaginationPipe) getSysPostListDto: GetSysPostListDto) {
     return await this.sysPostService.list(getSysPostListDto);
   }
 
-  /* 通过id查询 */
+  /**
+   * 通过id查询
+   */
   @Get(':postId')
   @RequiresPermissions('system:post:query')
   async oneByPostId(@Param('postId') postId: number) {
@@ -60,7 +67,9 @@ export class SysPostController {
     return DataObj.create(post);
   }
 
-  /* 更新 */
+  /**
+   * 更新
+   */
   @Put()
   @RepeatSubmit()
   @RequiresPermissions('system:post:edit')
@@ -72,7 +81,9 @@ export class SysPostController {
     await this.sysPostService.update(updateSysPostDto);
   }
 
-  /* 删除 */
+  /**
+   * 删除
+   */
   @Delete(':postIds')
   @RequiresPermissions('system:post:remove')
   @Log({
@@ -83,7 +94,9 @@ export class SysPostController {
     await this.sysPostService.delete(postIdArr);
   }
 
-  /* 导出 */
+  /**
+   * 导出
+   */
   @RepeatSubmit()
   @Post('export')
   @RequiresPermissions('system:post:export')

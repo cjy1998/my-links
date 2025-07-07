@@ -1,12 +1,3 @@
-/*
- * @Author: JiangSheng 87789771@qq.com
- * @Date: 2024-05-11 14:49:47
- * @LastEditors: jiang.sheng 87789771@qq.com
- * @LastEditTime: 2024-05-11 23:20:22
- * @FilePath: /meimei-new/src/modules/monitor/oper-log/oper-log.controller.ts
- * @Description:
- *
- */
 import {
   Body,
   Controller,
@@ -26,7 +17,9 @@ import { StringToArrPipe } from 'src/common/pipes/stringtoarr.pipe';
 import { Keep } from 'src/common/decorators/keep.decorator';
 import { ExcelService } from 'src/modules/common/excel/excel.service';
 import { ExportOperLogDto } from './dto/res-oper-log.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('操作日志')
 @Controller('monitor/operlog')
 export class OperLogController {
   constructor(
@@ -34,14 +27,18 @@ export class OperLogController {
     private readonly excelService: ExcelService,
   ) {}
 
-  /* 分页查询 */
+  /**
+   * 分页查询
+   */
   @Get('list')
   @RequiresPermissions('monitor:operlog:query')
   async list(@Query(PaginationPipe) getOperLogListDto: GetOperLogListDto) {
     return await this.operLogService.list(getOperLogListDto);
   }
 
-  /* 清空操作记录 */
+  /**
+   * 清空操作记录
+   */
   @Delete('clean')
   @RequiresPermissions('monitor:operlog:remove')
   @Log({
@@ -52,7 +49,9 @@ export class OperLogController {
     await this.operLogService.cleanOperLog();
   }
 
-  /* 删除操作日志 */
+  /**
+   * 删除操作日志
+   */
   @Delete(':operLogIds')
   @RequiresPermissions('monitor:operlog:remove')
   @Log({
@@ -65,7 +64,9 @@ export class OperLogController {
     await this.operLogService.deleteOperLog(operLogIdArr);
   }
 
-  /* 导出操作日志 */
+  /**
+   * 导出操作日志
+   */
   @Post('export')
   @RequiresPermissions('monitor:operlog:export')
   @Keep()

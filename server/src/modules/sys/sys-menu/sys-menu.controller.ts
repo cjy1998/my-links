@@ -1,12 +1,3 @@
-/*
- * @Author: jiang.sheng 87789771@qq.com
- * @Date: 2024-05-12 17:35:00
- * @LastEditors: jiang.sheng 87789771@qq.com
- * @LastEditTime: 2024-05-13 20:41:54
- * @FilePath: /meimei-new/src/modules/sys/sys-menu/sys-menu.controller.ts
- * @Description:
- *
- */
 import {
   Body,
   Controller,
@@ -29,11 +20,14 @@ import {
   GetSysMenuListDto,
   UpdateSysMenuDto,
 } from './dto/req-sys-menu.dto';
-
+import { ApiTags } from '@nestjs/swagger';
+@ApiTags('菜单管理')
 @Controller('system/menu')
 export class SysMenuController {
   constructor(private readonly sysMenuService: SysMenuService) {}
-  /* 新增 */
+  /**
+   * 新增
+   */
   @Post()
   @RepeatSubmit()
   @Log({
@@ -45,20 +39,26 @@ export class SysMenuController {
     await this.sysMenuService.add(addSysMenuDto);
   }
 
-  /* 列表查询 */
+  /**
+   * 列表查询
+   */
   @Get('list')
   @RequiresPermissions('system:menu:query')
   async list(@Query() getSysMenuListDto: GetSysMenuListDto) {
     return await this.sysMenuService.list(getSysMenuListDto);
   }
 
-  /* 获取菜单树 */
+  /**
+   * 获取菜单树
+   */
   @Get('treeselect')
   async treeselect() {
     return await this.sysMenuService.treeselect();
   }
 
-  /* 通过id查询 */
+  /**
+   * 通过id查询
+   */
   @Get(':menuId')
   @RequiresPermissions('system:menu:query')
   async oneByMenuId(@Param('menuId') menuId: number) {
@@ -66,7 +66,9 @@ export class SysMenuController {
     return DataObj.create(post);
   }
 
-  /* 更新 */
+  /**
+   * 更新
+   */
   @Put()
   @RepeatSubmit()
   @RequiresPermissions('system:menu:edit')
@@ -74,11 +76,13 @@ export class SysMenuController {
     title: '菜单管理',
     businessType: BusinessTypeEnum.update,
   })
-  async uplate(@Body(UpdateMessagePipe) updateSysMenuDto: UpdateSysMenuDto) {
+  async update(@Body(UpdateMessagePipe) updateSysMenuDto: UpdateSysMenuDto) {
     await this.sysMenuService.update(updateSysMenuDto);
   }
 
-  /* 删除 */
+  /**
+   * 删除
+   */
   @Delete(':menuIds')
   @RequiresPermissions('system:menu:remove')
   @Log({
@@ -89,7 +93,9 @@ export class SysMenuController {
     await this.sysMenuService.delete(menuId);
   }
 
-  /* 获取角色对应的菜单和菜单列表 */
+  /**
+   * 获取角色对应的菜单和菜单列表
+   */
   @Get('roleMenuTreeselect/:roleId')
   async roleMenuTreeselect(@Param('roleId') roleId: number) {
     const menus = await this.sysMenuService.treeselect();

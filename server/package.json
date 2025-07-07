@@ -34,6 +34,7 @@
     "@nestjs/mapped-types": "^2.0.5",
     "@nestjs/passport": "^10.0.3",
     "@nestjs/platform-express": "^10.3.8",
+    "@nestjs/swagger": "8.1.1",
     "@nestjs/throttler": "^5.1.2",
     "@prisma/client": "5.12.1",
     "@types/ali-oss": "^6.16.11",

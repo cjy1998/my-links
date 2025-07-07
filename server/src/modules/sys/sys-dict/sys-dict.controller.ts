@@ -1,12 +1,3 @@
-/*
- * @Author: JiangSheng 87789771@qq.com
- * @Date: 2024-04-30 15:17:47
- * @LastEditors: jiang.sheng 87789771@qq.com
- * @LastEditTime: 2024-05-11 22:21:22
- * @FilePath: /meimei-new/src/modules/sys/sys-dict/sys-dict.controller.ts
- * @Description:
- *
- */
 import {
   Body,
   Controller,
@@ -39,14 +30,18 @@ import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { Keep } from 'src/common/decorators/keep.decorator';
 import { ExcelService } from 'src/modules/common/excel/excel.service';
 import { ExportSysDictDto } from './dto/res-sys-dict.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('字典管理')
 @Controller('system')
 export class SysDictController {
   constructor(
     private readonly sysDictService: SysDictService,
     private readonly excelService: ExcelService,
   ) {}
-  /* 新增字典类型 */
+  /**
+   * 新增字典类型
+   */
   @RepeatSubmit()
   @RequiresPermissions('system:dict:add')
   @Post('dict/type')
@@ -55,7 +50,9 @@ export class SysDictController {
     await this.sysDictService.addType(addSysDictTypeDto);
   }
 
-  /* 编辑字典类型 */
+  /**
+   * 编辑字典类型
+   */
   @Put('dict/type')
   @RepeatSubmit()
   @RequiresPermissions('system:dict:edit')
@@ -66,14 +63,18 @@ export class SysDictController {
     await this.sysDictService.updateType(updateSysDictTypeDto);
   }
 
-  /* 分页查询字典类型列表 */
+  /**
+   * 分页查询字典类型列表
+   */
   @Get('dict/type/list')
   @RequiresPermissions('system:dict:query')
   async typeList(@Query(PaginationPipe) getSysDictTypeDto: GetSysDictTypeDto) {
     return await this.sysDictService.typeList(getSysDictTypeDto);
   }
 
-  /* 刷新缓存 */
+  /**
+   * 刷新缓存
+   */
   @Delete('dict/type/refreshCache')
   @Log({
     title: '字典管理',
@@ -83,7 +84,9 @@ export class SysDictController {
     await this.sysDictService.refreshCache();
   }
 
-  /* 通过ID查询字典类型 */
+  /**
+   * 通过ID查询字典类型
+   */
   @Get('/dict/type/optionselect')
   @RequiresPermissions('system:dict:query')
   async getOptionselect() {
@@ -92,7 +95,9 @@ export class SysDictController {
     return rows;
   }
 
-  /* 通过ID查询字典类型 */
+  /**
+   * 通过ID查询字典类型
+   */
   @Get('/dict/type/:typeId')
   @RequiresPermissions('system:dict:query')
   async getDictTypeById(@Param('typeId') dictId: number) {
@@ -100,7 +105,9 @@ export class SysDictController {
     return DataObj.create(dictType);
   }
 
-  /* 删除字典类型 */
+  /**
+   * 删除字典类型
+   */
   @Delete('/dict/type/:dictIds')
   @Log({
     title: '字典管理',
@@ -112,7 +119,9 @@ export class SysDictController {
     await this.sysDictService.deleteType(dictIdArr);
   }
 
-  /* 导出字典类型 */
+  /**
+   * 导出字典类型
+   */
   @Post('dict/type/export')
   @RequiresPermissions('system:dict:export')
   @Keep()
@@ -126,7 +135,9 @@ export class SysDictController {
     return new StreamableFile(file);
   }
 
-  /* 通过字典类型查询字典数据 */
+  /**
+   * 通过字典类型查询字典数据
+   */
   @Get('dict/data/type/:dictType')
   async getDictDataByType(@Param('dictType') dictType: string) {
     const dictDataArr =
@@ -134,7 +145,9 @@ export class SysDictController {
     return DataObj.create(dictDataArr);
   }
 
-  /* 分页查询字典数据列表 */
+  /**
+   * 分页查询字典数据列表
+   */
   @Get('dict/data/list')
   async dictDataList(
     @Query(PaginationPipe) getDictDataListDto: GetDictDataListDto,
@@ -142,7 +155,9 @@ export class SysDictController {
     return await this.sysDictService.dictDataList(getDictDataListDto);
   }
 
-  /* 新增字典数据 */
+  /**
+   * 新增字典数据
+   */
   @Post('dict/data')
   @RepeatSubmit()
   @Log({
@@ -153,14 +168,18 @@ export class SysDictController {
     await this.sysDictService.addDictData(addDictDataDto);
   }
 
-  /* 通过dictCode获取字典数据 */
+  /**
+   * 通过dictCode获取字典数据
+   */
   @Get('dict/data/:dictCode')
   async oneDictData(@Param('dictCode') dictCode: number) {
     const dictData = await this.sysDictService.findDictDataById(dictCode);
     return DataObj.create(dictData);
   }
 
-  /* 编辑字典数据 */
+  /**
+   * 编辑字典数据
+   */
   @RepeatSubmit()
   @Put('dict/data')
   async updateDictData(
@@ -169,7 +188,9 @@ export class SysDictController {
     await this.sysDictService.updateDictData(updateDictDataDto);
   }
 
-  /* 删除字典数据 */
+  /**
+   * 删除字典数据
+   */
   @Delete('dict/data/:dictCodes')
   @Log({
     title: '字典管理',
@@ -181,7 +202,9 @@ export class SysDictController {
     await this.sysDictService.deleteDictData(dictCodeArr);
   }
 
-  /* 导出字典数据 */
+  /**
+   * 导出字典数据
+   */
   @Post('dict/data/export')
   @RequiresPermissions('system:dict:export')
   @Keep()

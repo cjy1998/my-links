@@ -1,12 +1,3 @@
-/*
- * @Author: JiangSheng 87789771@qq.com
- * @Date: 2024-05-11 14:49:47
- * @LastEditors: jiang.sheng 87789771@qq.com
- * @LastEditTime: 2024-05-12 17:05:55
- * @FilePath: /meimei-new/src/modules/monitor/login-infor/login-infor.controller.ts
- * @Description:
- *
- */
 import {
   Body,
   Controller,
@@ -26,7 +17,8 @@ import { StringToArrPipe } from 'src/common/pipes/stringtoarr.pipe';
 import { Keep } from 'src/common/decorators/keep.decorator';
 import { ExcelService } from 'src/modules/common/excel/excel.service';
 import { ExportLoginInforDto } from './dto/res-login-infor.dto';
-
+import { ApiTags } from '@nestjs/swagger';
+@ApiTags('登录日志管理')
 @Controller('monitor/logininfor')
 export class LoginInforController {
   constructor(
@@ -34,7 +26,9 @@ export class LoginInforController {
     private readonly excelService: ExcelService,
   ) {}
 
-  /* 分页查询 */
+  /**
+   * 分页查询
+   */
   @Get('list')
   @RequiresPermissions('monitor:logininfor:query')
   async list(
@@ -43,7 +37,9 @@ export class LoginInforController {
     return await this.loginInforService.list(getLoginInforListDto);
   }
 
-  /* 清空登录记录 */
+  /**
+   * 清空登录记录
+   */
   @Delete('clean')
   @RequiresPermissions('monitor:logininfor:remove')
   @Log({
@@ -54,7 +50,9 @@ export class LoginInforController {
     await this.loginInforService.cleanLoginInfor();
   }
 
-  /* 删除登录日志 */
+  /**
+   * 删除登录日志
+   */
   @Delete(':loginInforIds')
   @RequiresPermissions('monitor:logininfor:remove')
   @Log({
@@ -67,7 +65,9 @@ export class LoginInforController {
     await this.loginInforService.deleteLoginInfor(loginInforIdArr);
   }
 
-  /* 导出登录日志 */
+  /**
+   * 导出登录日志
+   */
   @Post('export')
   @RequiresPermissions('monitor:logininfor:export')
   @Keep()
@@ -81,9 +81,11 @@ export class LoginInforController {
     return new StreamableFile(file);
   }
 
-  /* 解锁 */
+  /**
+   * 解锁
+   */
   @Get('unlock/:userName')
-  async(@Param('userName') userName: string) {
+  async unlock(@Param('userName') userName: string) {
     console.log(userName);
     return;
   }

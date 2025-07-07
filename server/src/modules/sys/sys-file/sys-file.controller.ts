@@ -21,15 +21,14 @@ import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { RepeatSubmit } from 'src/common/decorators/repeat-submit.decorator';
 import { BusinessTypeEnum, Log } from 'src/common/decorators/log.decorator';
 import { RequiresPermissions } from 'src/common/decorators/requires-permissions.decorator';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('文件管理')
 @Controller('system/file')
 export class SysFileController {
   constructor(private readonly sysFileService: SysFileService) {}
   /**
    * 上传图片
-   * @param file
-   * @param body
-   * @returns
    */
   @Post('upload/image')
   @RepeatSubmit()
@@ -53,9 +52,6 @@ export class SysFileController {
   }
   /**
    * 上传文件
-   * @param file
-   * @param body
-   * @returns
    */
   @Post('upload/file')
   @RepeatSubmit()
@@ -78,22 +74,24 @@ export class SysFileController {
     return this.sysFileService.uploadFile(fileWithMeta);
   }
   /**
-   * 分页查询文件列表
-   * @param pagination
-   * @returns
+   * 文件列表
    */
   @Get('list')
   @RequiresPermissions('system:file:query')
   findAll(@Query(PaginationPipe) pagination: PaginationDto) {
     return this.sysFileService.findAll(pagination);
   }
-
+  /**
+   * 文件详情
+   */
   @Get(':id')
   @RequiresPermissions('system:file:query')
   findOne(@Param('id') id: number) {
     return this.sysFileService.findOneById(id);
   }
-
+  /**
+   * 删除文件
+   */
   @Delete(':ids')
   @RequiresPermissions('system:file:remove')
   @Log({

@@ -32,7 +32,9 @@ import {
 import { CreateMessagePipe } from 'src/common/pipes/createmessage.pipe';
 import { UpdateMessagePipe } from 'src/common/pipes/updatemessage.pipe';
 import { StringToArrPipe } from 'src/common/pipes/stringtoarr.pipe';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('定时任务')
 @Controller('monitor')
 export class JobController {
   constructor(
@@ -40,7 +42,9 @@ export class JobController {
     private readonly excelService: ExcelService,
   ) {}
 
-  /* 新增任务 */
+  /**
+   * 新增
+   */
   @RepeatSubmit()
   @Post('job')
   @RequiresPermissions('monitor:job:add')
@@ -48,14 +52,18 @@ export class JobController {
     await this.jobService.addJob(addJobDto);
   }
 
-  /* 分页查询任务列表 */
+  /**
+   * 分页查询任务列表
+   */
   @Get('job/list')
   @RequiresPermissions('monitor:job:query')
   async jobList(@Query(PaginationPipe) jobListDto: JobListDto) {
     return this.jobService.jobList(jobListDto);
   }
 
-  /* 通过id查询任务 */
+  /**
+   * 通过id查询任务
+   */
   @Get('job/:jobId')
   @RequiresPermissions('monitor:job:query')
   async oneJob(@Param('jobId') jobId: number) {
@@ -63,7 +71,9 @@ export class JobController {
     return DataObj.create(job);
   }
 
-  /* 编辑任务 */
+  /**
+   * 编辑任务
+   */
   @Put('job')
   @RepeatSubmit()
   @RequiresPermissions('monitor:job:edit')
@@ -71,7 +81,9 @@ export class JobController {
     await this.jobService.updataJob(updateJobDto);
   }
 
-  /* 执行一次 */
+  /**
+   * 执行一次
+   */
   @Put('job/run')
   @RepeatSubmit()
   @RequiresPermissions('monitor:job:edit')
@@ -79,14 +91,18 @@ export class JobController {
     await this.jobService.runOne(jobRunDto);
   }
 
-  /* 删除任务 */
+  /**
+   * 删除任务
+   */
   @Delete('job/:jobIds')
   @RequiresPermissions('monitor:job:remove')
   async deleteJob(@Param('jobIds', new StringToArrPipe()) jobIds: number[]) {
     await this.jobService.deleteJob(jobIds);
   }
 
-  /* 更改任务状态 */
+  /**
+   * 更改任务状态
+   */
   @Put('job/changeStatus')
   @RepeatSubmit()
   @RequiresPermissions('monitor:job:changeStatus')
@@ -94,7 +110,9 @@ export class JobController {
     await this.jobService.changeStatus(changStatusDto);
   }
 
-  /* 导出定时任务 */
+  /**
+   * 导出定时任务
+   */
   @RepeatSubmit()
   @Post('job/export')
   @RequiresPermissions('monitor:job:export')
@@ -105,19 +123,25 @@ export class JobController {
     return new StreamableFile(file);
   }
 
-  /* 分页查询任务调度日志 */
+  /**
+   * 分页查询任务调度日志
+   */
   @Get('jobLog/list')
   async jobLogList(@Query(PaginationPipe) jobLogListDto: JobLogListDto) {
     return await this.jobService.jobLogList(jobLogListDto);
   }
 
-  /* 清空任务调度日志 */
+  /**
+   * 清空任务调度日志
+   */
   @Delete('jobLog/clean')
   async cleanJobLog() {
     await this.jobService.cleanJobLog();
   }
 
-  /* 删除任务调度日志 */
+  /**
+   * 删除任务调度日志
+   */
   @Delete('jobLog/:jobLogIds')
   async deleteJogLog(
     @Param('jobLogIds', new StringToArrPipe()) jobLogIds: number[],
@@ -125,7 +149,9 @@ export class JobController {
     await this.jobService.deleteJogLog(jobLogIds);
   }
 
-  /* 导出定时任务日志 */
+  /**
+   * 导出定时任务日志
+   */
   @RepeatSubmit()
   @Post('jobLog/export')
   @Keep()

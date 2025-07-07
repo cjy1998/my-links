@@ -1,13 +1,3 @@
-/*
- * @Author: Sheng.Jiang
- * @Date: 2021-12-08 18:30:39
- * @LastEditTime: 2024-05-17 17:08:30
- * @LastEditors: JiangSheng 87789771@qq.com
- * @Description: 登录 controller
- * @FilePath: \meimei-new\src\modules\login\login.controller.ts
- * You can you up，no can no bb！！
- */
-
 import {
   Body,
   Controller,
@@ -26,18 +16,24 @@ import { LoginService } from './login.service';
 import { SysUser } from '@prisma/client';
 import { Request } from 'express';
 import { UserInfo } from 'src/common/type/user-info.type';
+import { ApiTags } from '@nestjs/swagger';
+@ApiTags('登录相关')
 @Controller()
 export class LoginController {
   constructor(private readonly loginService: LoginService) {}
 
-  /* 获取图片验证码 */
+  /**
+   * 获取图片验证码
+   */
   @Get('captchaImage')
   @Public()
   async captchaImage(): Promise<ResImageCaptchaDto> {
     return await this.loginService.createImageCaptcha();
   }
 
-  /* 用户登录 */
+  /**
+   * 用户登录
+   */
   @Post('login')
   @Public()
   @UseGuards(LocalAuthGuard)
@@ -49,7 +45,9 @@ export class LoginController {
     return await this.loginService.login(user, req);
   }
 
-  /* 获取用户信息 */
+  /**
+   * 获取用户信息
+   */
   @Get('getInfo')
   async getInfo(@User() user: UserInfo) {
     const { permissions, roles } = user;
@@ -62,7 +60,9 @@ export class LoginController {
     };
   }
 
-  /* 获取用户路由信息 */
+  /**
+   * 获取用户路由信息
+   */
   @Get('getRouters')
   async getRouters(
     @User(UserEnum.userId) userId: number,
@@ -71,7 +71,9 @@ export class LoginController {
     return await this.loginService.getRouters(userId, permissions);
   }
 
-  /* 退出登录 */
+  /**
+   * 退出登录
+   */
   @Public()
   @Post('logout')
   async logout(@Headers('Authorization') authorization: string) {

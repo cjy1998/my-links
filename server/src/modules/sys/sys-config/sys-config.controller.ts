@@ -1,12 +1,3 @@
-/*
- * @Author: jiang.sheng 87789771@qq.com
- * @Date: 2024-04-27 15:34:31
- * @LastEditors: JiangSheng 87789771@qq.com
- * @LastEditTime: 2024-05-16 12:39:48
- * @FilePath: \meimei-new\src\modules\sys\sys-config\sys-config.controller.ts
- * @Description: 系统参数
- *
- */
 import {
   Body,
   Controller,
@@ -36,7 +27,9 @@ import { UpdateMessagePipe } from 'src/common/pipes/updatemessage.pipe';
 import { ExportSysConfigDto } from './dto/res-sys-config.dto';
 import { ExcelService } from 'src/modules/common/excel/excel.service';
 import { StringToArrPipe } from 'src/common/pipes/stringtoarr.pipe';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('系统参数管理')
 @Controller('system/config')
 export class SysConfigController {
   constructor(
@@ -44,7 +37,9 @@ export class SysConfigController {
     private readonly excelService: ExcelService,
   ) {}
 
-  /* 新增参数 */
+  /**
+   * 新增参数
+   */
   @RepeatSubmit()
   @Post()
   @Log({
@@ -56,14 +51,18 @@ export class SysConfigController {
     await this.sysConfigService.add(addSysConfigDto);
   }
 
-  /* 分页查询参数列表 */
+  /**
+   * 分页查询参数列表
+   */
   @Get('list')
   @RequiresPermissions('system:config:query')
   async list(@Query(PaginationPipe) getSysConfigListDto: GetSysConfigListDto) {
     return await this.sysConfigService.list(getSysConfigListDto);
   }
 
-  /* 清除缓存 */
+  /**
+   * 清除缓存
+   */
   @Delete('refreshCache')
   @Log({
     title: '系统参数',
@@ -73,7 +72,9 @@ export class SysConfigController {
     return await this.sysConfigService.refreshCache();
   }
 
-  /* 通过 configKey 查询参数(缓存查询) */
+  /**
+   * 通过 configKey 查询参数(缓存查询)
+   */
   @Get('/configKey/:configKey')
   @Keep()
   async oneByconfigKey(@Param('configKey') configKey: string) {
@@ -81,7 +82,9 @@ export class SysConfigController {
     return AjaxResult.success(configValue, configValue || '');
   }
 
-  /* 通过id查询参数 */
+  /**
+   * 通过id查询参数
+   */
   @Get(':configId')
   @RequiresPermissions('system:config:query')
   async one(@Param('configId') configId: number) {
@@ -89,7 +92,9 @@ export class SysConfigController {
     return DataObj.create(sysConfig);
   }
 
-  /* 修改参数 */
+  /**
+   * 修改参数
+   */
   @RepeatSubmit()
   @Put()
   @Log({
@@ -103,7 +108,9 @@ export class SysConfigController {
     await this.sysConfigService.update(updateSysConfigDto);
   }
 
-  /* 删除参数 */
+  /**
+   * 删除参数
+   */
   @Delete(':configIds')
   @Log({
     title: '系统参数',
@@ -116,7 +123,9 @@ export class SysConfigController {
     await this.sysConfigService.delete(configIdArr);
   }
 
-  /* 导出 */
+  /**
+   * 导出
+   */
   @RepeatSubmit()
   @Post('export')
   @RequiresPermissions('system:config:export')

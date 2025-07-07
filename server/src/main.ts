@@ -13,6 +13,7 @@ import helmet from 'helmet';
 import { ConfigService } from '@nestjs/config';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -42,6 +43,23 @@ async function bootstrap() {
   if (uploadPath) {
     app.useStaticAssets(uploadPath);
   }
+  // 接口文档配置
+  const config = new DocumentBuilder()
+    .setTitle('通用管理后台')
+    .setDescription('The API description')
+    .setVersion('1.0')
+    // 添加 Bearer Token 认证方案
+    .addBearerAuth({
+      type: 'http',
+      scheme: 'bearer',
+      bearerFormat: 'JWT', // 可选，根据实际需求
+      name: 'Authorization',
+      description: '请输入访问令牌',
+      in: 'header',
+    })
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('doc', app, document);
 
   /* 读取环境变量里的项目启动端口 */
   const port = configService.get('port');

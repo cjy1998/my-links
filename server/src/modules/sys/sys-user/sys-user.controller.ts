@@ -1,12 +1,3 @@
-/*
- * @Author: JiangSheng 87789771@qq.com
- * @Date: 2024-05-20 13:39:36
- * @LastEditors: JiangSheng 87789771@qq.com
- * @LastEditTime: 2024-06-27 10:42:21
- * @FilePath: \meimei-prisma-vue3\meimei-admin\src\modules\sys\sys-user\sys-user.controller.ts
- * @Description:
- *
- */
 import {
   Body,
   Controller,
@@ -48,14 +39,18 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiException } from 'src/common/exceptions/api.exception';
 import { User, UserEnum } from 'src/common/decorators/user.decorator';
 import { DataScope } from 'src/common/type/data-scope.type';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('用户管理')
 @Controller('system/user')
 export class SysUserController {
   constructor(
     private readonly sysUserService: SysUserService,
     private readonly excelService: ExcelService,
   ) {}
-  /* 新增 */
+  /**
+   * 新增用户
+   */
   @Post()
   @RepeatSubmit()
   @Log({
@@ -67,7 +62,9 @@ export class SysUserController {
     await this.sysUserService.add(addSysUserDto);
   }
 
-  /* 获取岗位和角色列表 */
+  /**
+   * 获取岗位和角色列表
+   */
   @Get()
   async postAndRole() {
     const [posts, roles] = await this.sysUserService.postAndRole();
@@ -77,7 +74,9 @@ export class SysUserController {
     };
   }
 
-  /* 分页查询 */
+  /**
+   * 分页查询
+   */
   @Get('list')
   @RequiresPermissions('system:user:query')
   async list(
@@ -87,13 +86,17 @@ export class SysUserController {
     return await this.sysUserService.list(getSysUserListDto, dataScope);
   }
 
-  /* 获取部门树 */
+  /**
+   * 获取部门树
+   */
   @Get('deptTree')
   async deptTree(@User(UserEnum.dataScope) dataScope: DataScope) {
     return await this.sysUserService.treeselect(dataScope);
   }
 
-  /* 获取用户个人信息 */
+  /**
+   * 获取用户个人信息
+   */
   @Get('profile')
   async profile(@User(UserEnum.userId) userId: number) {
     const user = await this.sysUserService.oneByUserId(userId);
@@ -107,7 +110,9 @@ export class SysUserController {
     };
   }
 
-  /* 更改个人信息 */
+  /**
+   * 更改个人信息
+   */
   @Put('profile')
   @RepeatSubmit()
   async updataMyslf(
@@ -118,7 +123,9 @@ export class SysUserController {
     this.sysUserService.updataMyslf(updataSelfDto);
   }
 
-  /* 更改个人密码 */
+  /**
+   * 更改个人密码
+   */
   @Put('profile/updatePwd')
   @RepeatSubmit()
   async updatePwd(
@@ -129,7 +136,9 @@ export class SysUserController {
     await this.sysUserService.updatePwd(updateSelfPwd);
   }
 
-  /* 通过id查询 */
+  /**
+   * 通过id查询
+   */
   @Get(':userId')
   @RequiresPermissions('system:user:query')
   async oneByUserId(@Param('userId') userId: number) {
@@ -146,7 +155,9 @@ export class SysUserController {
     };
   }
 
-  /* 更新 */
+  /**
+   * 更新
+   */
   @Put()
   @RepeatSubmit()
   @RequiresPermissions('system:user:edit')
@@ -158,14 +169,18 @@ export class SysUserController {
     await this.sysUserService.update(updateSysUserDto);
   }
 
-  /* 更新用户状态 */
+  /**
+   * 更新用户状态
+   */
   @Put('changeStatus')
   @RequiresPermissions('system:user:edit')
   async changeStatus(@Body() changeStatusDto: ChangeStatusDto) {
     await this.sysUserService.changeStatus(changeStatusDto);
   }
 
-  /* 上传头像 */
+  /**
+   * 上传头像
+   */
   @RepeatSubmit()
   @Post('profile/avatar')
   @UseInterceptors(FileInterceptor('avatarfile'))
@@ -180,7 +195,9 @@ export class SysUserController {
     };
   }
 
-  /* 删除 */
+  /**
+   * 删除
+   */
   @Delete(':userIds')
   @RequiresPermissions('system:user:remove')
   @Log({
@@ -191,7 +208,9 @@ export class SysUserController {
     await this.sysUserService.delete(userIdArr);
   }
 
-  /* 更新用户密码 */
+  /**
+   * 更新用户密码
+   */
   @Put('resetPwd')
   @RepeatSubmit()
   @RequiresPermissions('system:user:resetPwd')
@@ -199,14 +218,18 @@ export class SysUserController {
     await this.sysUserService.resetPwd(resetPwdDto);
   }
 
-  /* 查询用户 及 所有角色列表 */
+  /**
+   * 查询用户 及 所有角色列表
+   */
   @Get('authRole/:userId')
   @RequiresPermissions('system:user:edit')
   async authRole(@Param('userId') userId: number) {
     return await this.sysUserService.authRole(userId);
   }
 
-  /* 给用户添加角色 */
+  /**
+   * 给用户添加角色
+   */
   @Put('authRole')
   @RepeatSubmit()
   @RequiresPermissions('system:user:edit')
@@ -214,7 +237,9 @@ export class SysUserController {
     await this.sysUserService.cancelAll(cancelAllDto);
   }
 
-  /* 导出 */
+  /**
+   * 导出
+   */
   @Post('export')
   @RepeatSubmit()
   @RequiresPermissions('system:user:export')
@@ -235,7 +260,9 @@ export class SysUserController {
     return new StreamableFile(file);
   }
 
-  /* 下载模板 */
+  /**
+   * 下载模板
+   */
   @RepeatSubmit()
   @Post('importTemplate')
   @Keep()
@@ -244,7 +271,9 @@ export class SysUserController {
     return new StreamableFile(file);
   }
 
-  /* 用户导入 */
+  /**
+   * 用户导入
+   */
   @Post('importData')
   @RepeatSubmit()
   @RequiresPermissions('system:user:import')

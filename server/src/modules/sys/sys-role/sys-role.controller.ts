@@ -33,14 +33,18 @@ import { ExcelService } from 'src/modules/common/excel/excel.service';
 import { ExportSysRoleDto } from './dto/res-sys-role.dto';
 import { User, UserEnum } from 'src/common/decorators/user.decorator';
 import { DataScope } from 'src/common/type/data-scope.type';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('角色管理')
 @Controller('system/role')
 export class SysRoleController {
   constructor(
     private readonly sysRoleService: SysRoleService,
     private readonly excelService: ExcelService,
   ) {}
-  /* 新增 */
+  /**
+   * 新增
+   */
   @Post()
   @RepeatSubmit()
   @Log({
@@ -52,14 +56,18 @@ export class SysRoleController {
     await this.sysRoleService.add(addSysRoleDto);
   }
 
-  /* 分页查询 */
+  /**
+   * 分页查询
+   */
   @Get('list')
   @RequiresPermissions('system:role:query')
   async list(@Query(PaginationPipe) getSysRoleListDto: GetSysRoleListDto) {
     return await this.sysRoleService.list(getSysRoleListDto);
   }
 
-  /* 通过id查询 */
+  /**
+   * 通过id查询
+   */
   @Get(':roleId')
   @RequiresPermissions('system:role:query')
   async oneByRoleId(@Param('roleId') roleId: number) {
@@ -67,7 +75,9 @@ export class SysRoleController {
     return DataObj.create(role);
   }
 
-  /* 获取角色数据权限 */
+  /**
+   * 获取角色数据权限
+   */
   @Get('deptTree/:roleId')
   async deptTree(@Param('roleId') roleId: number) {
     const depts = await this.sysRoleService.treeselect();
@@ -78,7 +88,9 @@ export class SysRoleController {
     };
   }
 
-  /* 更新 */
+  /**
+   * 更新
+   */
   @Put()
   @RepeatSubmit()
   @RequiresPermissions('system:role:edit')
@@ -86,18 +98,22 @@ export class SysRoleController {
     title: '角色管理',
     businessType: BusinessTypeEnum.update,
   })
-  async uplate(@Body(UpdateMessagePipe) updateSysRoleDto: UpdateSysRoleDto) {
+  async update(@Body(UpdateMessagePipe) updateSysRoleDto: UpdateSysRoleDto) {
     await this.sysRoleService.update(updateSysRoleDto);
   }
 
-  /* 更新角色状态 */
+  /**
+   * 更新角色状态
+   */
   @Put('changeStatus')
   @RequiresPermissions('system:role:edit')
   async changeStatus(@Body() changeStatusDto: ChangeStatusDto) {
     await this.sysRoleService.changeStatus(changeStatusDto);
   }
 
-  /* 更新数据权限 */
+  /**
+   * 更新数据权限
+   */
   @Put('dataScope')
   @RepeatSubmit()
   @RequiresPermissions('system:role:edit')
@@ -109,7 +125,9 @@ export class SysRoleController {
     await this.sysRoleService.dataScope(dataScopeDto);
   }
 
-  /* 删除 */
+  /**
+   * 删除
+   */
   @Delete(':roleIds')
   @RequiresPermissions('system:role:remove')
   @Log({
@@ -120,7 +138,9 @@ export class SysRoleController {
     await this.sysRoleService.delete(roleIdArr);
   }
 
-  /* 导出 */
+  /**
+   * 导出
+   */
   @RepeatSubmit()
   @Post('export')
   @RequiresPermissions('system:role:export')
@@ -135,7 +155,9 @@ export class SysRoleController {
     return new StreamableFile(file);
   }
 
-  /* 分页查询角色下用户 */
+  /**
+   * 分页查询角色下用户
+   */
   @Get('authUser/allocatedList')
   async allocatedList(
     @Query(PaginationPipe) allocatedListDto: AllocatedListDto,
@@ -144,7 +166,9 @@ export class SysRoleController {
     return await this.sysRoleService.allocatedList(allocatedListDto, dataScope);
   }
 
-  /* 分页查询角色还没有的用户 */
+  /**
+   * 分页查询角色还没有的用户
+   */
   @Get('authUser/unallocatedList')
   async unallocatedList(
     @Query(PaginationPipe) allocatedListDto: AllocatedListDto,
@@ -156,7 +180,9 @@ export class SysRoleController {
     );
   }
 
-  /* 批量给角色添加用户 */
+  /**
+   * 批量给角色添加用户
+   */
   @Put('authUser/selectAll')
   async selectAll(@Query() cancelAllDto: CancelAllDto) {
     const { roleId, userIds } = cancelAllDto;
@@ -166,7 +192,9 @@ export class SysRoleController {
     return await this.sysRoleService.selectAll(roleId, userIdArr);
   }
 
-  /* 批量取消授权 */
+  /**
+   * 批量取消授权
+   */
   @Put('authUser/cancelAll')
   async cancelAll(@Query() cancelAllDto: CancelAllDto) {
     const { roleId, userIds } = cancelAllDto;
@@ -176,7 +204,9 @@ export class SysRoleController {
     return await this.sysRoleService.cancelAll(roleId, userIdArr);
   }
 
-  /* 单个给用户取消角色授权 */
+  /**
+   * 单个给用户取消角色授权
+   */
   @Put('authUser/cancel')
   async cancel(@Body() cancelDto: CancelDto) {
     return await this.sysRoleService.cancel(cancelDto);
