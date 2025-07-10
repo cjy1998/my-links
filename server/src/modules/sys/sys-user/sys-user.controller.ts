@@ -17,8 +17,10 @@ import {
   Post,
   Put,
   Query,
+  Req,
   StreamableFile,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { BusinessTypeEnum, Log } from 'src/common/decorators/log.decorator';
@@ -48,6 +50,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiException } from 'src/common/exceptions/api.exception';
 import { User, UserEnum } from 'src/common/decorators/user.decorator';
 import { DataScope } from 'src/common/type/data-scope.type';
+import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
+import { Public } from 'src/common/decorators/public.decorator';
 
 @Controller('system/user')
 export class SysUserController {
@@ -275,5 +279,13 @@ export class SysUserController {
       file,
     );
     await this.sysUserService.importData(data, updateSupportDto.updateSupport);
+  }
+
+  @Public()
+  @Get('me')
+  @UseGuards(JwtAuthGuard) // 验证Cookie中的Token
+  async getCurrentUser(@Req() req) {
+    // req.user 由JWT守卫解析，返回用户信息
+    return req.user;
   }
 }

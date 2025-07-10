@@ -12,20 +12,30 @@ import { PassportModule } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
-import { LoginModule } from '../login/login.module';
-import { WeChatStrategy } from './strategies/wechat.strategy';
-import { GiteeStrategy } from './strategies/gitee.strategy';
-import { HttpModule } from '@nestjs/axios';
+import { GitHubStrategy } from './strategies/github.strategy';
+import { JwtModule } from '@nestjs/jwt';
+import { jwtConstants } from './auth.constants';
+import { SysUserModule } from '../sys/sys-user/sys-user.module';
 
 @Module({
-  imports: [PassportModule,HttpModule],
+  imports: [
+    PassportModule,
+    JwtModule.registerAsync({
+      useFactory: () => {
+        const expiresIn = 60 * 60 * 24 * 365; // 与LoginModule保持一致
+        return {
+          secret: jwtConstants.secret, // 使用共享的常量
+          signOptions: { expiresIn: expiresIn },
+        };
+      },
+    }),
+  ],
   controllers: [],
   providers: [
     AuthService,
     LocalStrategy,
     JwtStrategy,
-    WeChatStrategy,
-    GiteeStrategy
+    GitHubStrategy
   ],
   exports: [AuthService],
 })

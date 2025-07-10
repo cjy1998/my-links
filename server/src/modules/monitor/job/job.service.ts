@@ -80,7 +80,7 @@ export class JobService {
             const pattern = opts.repeat?.pattern; //获取任务正则表达式
             if (pattern) {
               /* 解析正则表达， 从当时任务设定的执行时间开始解析, 此时此刻结束, 启动迭代模式 */
-              let interval = parser.parseExpression(pattern, {
+              let interval = (parser as any).parseExpression(pattern, {
                 currentDate: dayjs(prevMillis - 1).format(),
                 endDate: dayjs().format(),
                 iterator: true,
@@ -153,7 +153,7 @@ export class JobService {
     let nextValidTime = '';
     if (job.cronExpression) {
       try {
-        let interval = parser.parseExpression(job.cronExpression);
+        let interval = (parser as any).parseExpression(job.cronExpression);
         nextValidTime = dayjs(interval.next().toString()).format();
       } catch (error) {}
     }

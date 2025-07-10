@@ -29,7 +29,7 @@ export async function getInitialState(): Promise<{
       const response = await getUserInfo({
         skipErrorHandler: true,
       });
-      if (response.user.avatar === '') {
+      if (response?.user?.avatar === '' || !response?.user?.avatar) {
         response.user.avatar =
           'https://gw.alipayobjects.com/zos/rmsportal/BiazfanxmamNRoxxVxka.png';
       }

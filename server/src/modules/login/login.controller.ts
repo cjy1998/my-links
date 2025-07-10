@@ -36,7 +36,7 @@ export class LoginController {
   constructor(
     private readonly loginService: LoginService,
     private readonly authService: AuthService,
-  ) {}
+  ) { }
 
   /* 获取图片验证码 */
   @Get('captchaImage')
@@ -88,71 +88,42 @@ export class LoginController {
       await this.loginService.logout(token);
     }
   }
-
+  // GitHub登录入口
   @Public()
-   @Get('wechat')
-   @UseGuards(AuthGuard('wechat'))
-  wechatLogin(@Res() res: Response) {
-    const authUrl = `https://open.weixin.qq.com/connect/qrconnect?appid=${process.env.WECHAT_APP_ID}&redirect_uri=${encodeURIComponent(process.env.WECHAT_CALLBACK_URL)}&response_type=code&scope=snsapi_login&state=STATE`;
-    res.redirect(authUrl);
+  @Get('github')
+  @UseGuards(AuthGuard('github'))
+  githubAuth() {
+    // 会自动重定向到GitHub授权页
   }
 
-  // 微信登录回调
+  // GitHub回调
   @Public()
-  @Get('wechat/callback')
-  @UseGuards(AuthGuard('wechat'))
-  async wechatCallback(
-    @Query('code') code: string,
-    @Query('state') state: string,
-    @Res() res: Response,
-  ) {
+  @Get('callback_github')
+  @UseGuards(AuthGuard('github'))
+  async githubCallback(@Req() req, @Res() res: Response, @Query('error') error: string) {
+    if (error) {
+      console.error('GitHub authentication error:', error);
+      return res.redirect(`${process.env.FRONTEND_URL}?error=auth_failed`);
+    }
+
     try {
-      const wechatUser = await this.authService.getWechatUser(code);
+      // 生成JWT
+      const token = await this.authService.generateToken(req.user);
       
-      const result = await this.authService.handleSocialLogin({
-        provider: 'wechat',
-        providerId: wechatUser.openid,
-        nickName: wechatUser.nickname,
-        avatar: wechatUser.headimgurl,
+      // 设置HTTP-only Cookie
+      res.cookie('token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 3600000, // 1小时
+        sameSite: 'lax',
       });
 
-      res.redirect(`${process.env.FRONTEND_URL}/login?token=${result.token}`);
-    } catch (error) {
-      res.redirect(`${process.env.FRONTEND_URL}/login?error=${error.message}`);
+      // 重定向到前端
+      res.redirect(process.env.FRONTEND_URL || '/');
+    } catch (err) {
+      console.error('Token generation error:', err);
+      res.redirect(`${process.env.FRONTEND_URL}?error=token_error`);
     }
   }
 
-  // Gitee登录跳转
-  @Public()
-  @Get('gitee')
-  @UseGuards(AuthGuard('gitee'))
-  giteeLogin(@Res() res: Response) {
-    const authUrl = `https://gitee.com/oauth/authorize?client_id=${process.env.GITEE_CLIENT_ID}&redirect_uri=${encodeURIComponent(process.env.GITEE_CALLBACK_URL)}&response_type=code`;
-    res.redirect(authUrl);
-  }
-
-  // Gitee登录回调
-  @Public()
-  @Get('gitee/callback')
-  @UseGuards(AuthGuard('gitee'))
-  async giteeCallback(
-    @Query('code') code: string,
-    @Res() res: Response,
-  ) {
-    try {
-      const giteeUser = await this.authService.getGiteeUser(code);
-      
-      const result = await this.authService.handleSocialLogin({
-        provider: 'gitee',
-        providerId: giteeUser.id,
-        nickName: giteeUser.name,
-        avatar: giteeUser.avatar_url,
-        email: giteeUser.email,
-      });
-
-      res.redirect(`${process.env.FRONTEND_URL}/login?token=${result.token}`);
-    } catch (error) {
-      res.redirect(`${process.env.FRONTEND_URL}/login?error=${error.message}`);
-    }
-  }
 }

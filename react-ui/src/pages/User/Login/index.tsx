@@ -3,6 +3,7 @@ import { getCaptchaImg, login } from '@/services/system/auth';
 import { getFakeCaptcha } from '@/services/ant-design-pro/login';
 import {
   AlipayCircleOutlined,
+  GithubOutlined,
   LockOutlined,
   MobileOutlined,
   TaobaoCircleOutlined,
@@ -16,12 +17,13 @@ import {
   ProFormText,
 } from '@ant-design/pro-components';
 import { useEmotionCss } from '@ant-design/use-emotion-css';
-import { FormattedMessage, history, SelectLang, useIntl, useModel, Helmet } from '@umijs/max';
+import { FormattedMessage, history, SelectLang, useIntl, useModel, Helmet, useNavigate } from '@umijs/max';
 import { Alert, Col, message, Row, Tabs, Image } from 'antd';
 import Settings from '../../../../config/defaultSettings';
 import React, { useEffect, useState } from 'react';
 import { flushSync } from 'react-dom';
 import { clearSessionToken, setSessionToken } from '@/access';
+import { get_github } from '@/services/system/third_party';
 
 const ActionIcons = () => {
   const langClassName = useEmotionCss(({ token }) => {
@@ -43,6 +45,13 @@ const ActionIcons = () => {
       <AlipayCircleOutlined key="AlipayCircleOutlined" className={langClassName} />
       <TaobaoCircleOutlined key="TaobaoCircleOutlined" className={langClassName} />
       <WeiboCircleOutlined key="WeiboCircleOutlined" className={langClassName} />
+      <GithubOutlined onClick={()=>{
+         window.location.href = 'http://localhost:8000/api/github';
+      //  get_github({}).then((res)=>{
+      //   console.log('res',res)
+      //  })
+
+      }} key="GithubOutlined" className={langClassName} />
     </>
   );
 };
@@ -176,6 +185,26 @@ const Login: React.FC = () => {
   useEffect(() => {
     getCaptchaCode();
   }, []);
+const navigate = useNavigate();
+   useEffect(() => {
+    // 检查是否已登录（通过Cookie中的Token）
+    const checkLogin = async () => {
+      try {
+        // 调用后端验证接口（需后端实现）
+        const res = await get_github('http://localhost:3000/api/system/user/me', {
+          withCredentials: true, // 关键：携带Cookie
+        });
+        console.log('resxxxxxx',res)
+        // 若成功获取用户信息，说明已登录，跳转到首页
+        // navigate('/home');
+      } catch (err) {
+        // 未登录，保持在登录页
+        console.log('未登录或Token无效');
+      }
+    };
+
+    checkLogin();
+  }, [navigate]);
 
   return (
     <div className={containerClassName}>
@@ -427,7 +456,7 @@ const Login: React.FC = () => {
           </div>
         </LoginForm>
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 };

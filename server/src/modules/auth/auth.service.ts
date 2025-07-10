@@ -21,19 +21,17 @@ import {
   USER_VERSION_KEY,
 } from 'src/common/contants/redis.contant';
 import { JwtService } from '@nestjs/jwt';
-import {  Cache } from '@nestjs/cache-manager';
-import { Prisma, SysUser } from '@prisma/client';
-import { HttpService } from '@nestjs/axios';
-import { firstValueFrom } from 'rxjs';
+import { Payload } from '../login/login.interface';
+import { ConfigService } from '@nestjs/config';
+import { SysUser } from '@prisma/client';
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRedis() private readonly redis: Redis,
     private readonly prisma: PrismaService,
     private jwtService: JwtService,
-    private httpService: HttpService,
-    @Inject( Cache) private cacheManager: Cache
-  ) {}
+    private readonly configService: ConfigService,
+  ) { }
 
   /* 判断验证码是否正确 */
   async checkImgCaptcha(uuid: string, code: string) {
@@ -77,144 +75,87 @@ export class AuthService {
     }
   }
 
-  /**
-   * @description: 处理第三方登录
-   * @param profile 
-   * @returns 
-   */
-  async handleSocialLogin(profile: {
-    provider: string;
-    providerId: string;
-    nickName?: string;
-    avatar?: string;
-    email?: string;
-    phone?: string;
-  }) {
-    // 1. 检查是否已绑定
-    const socialUser = await this.prisma.sysSocialUser.findUnique({
-      where: {
-        social_provider_unique: {
-          provider: profile.provider,
-          providerId: profile.providerId,
-        },
-      },
-      include: { user: true },
-    }) as Prisma.SysSocialUserGetPayload<{ include: { user: true } }> | null;
 
-    if (socialUser?.user) {
-      return this.generateToken(socialUser.user);
-    }
-
-    // 3. 未绑定则尝试通过邮箱匹配现有账号
-    if (profile.email) {
-      const user = await this.prisma.sysUser.findFirst({
-        where: { 
-          email: profile.email,
-          delFlag: '0',
-          status: '0'
-        },
-      });
-
-      if (user) {
-        // 绑定第三方账号到现有用户
-        await this.bindSocialAccount(user.userId, profile= {
-          provider: profile.provider,
-          providerId: profile.providerId,
-          nickName: profile.nickName,
-          avatar: profile.avatar,
-        });
-        return this.generateToken(user);
-      }
-    }
-
-    // 4. 没有匹配账号，抛出异常
-    throw new UnauthorizedException('未找到关联的系统账号，请联系管理员绑定');
-  }
-  // 绑定第三方账号
-  private async bindSocialAccount(
-    userId: number,
-    profile: {
-      provider: string;
-      providerId: string;
-      nickName?: string;
-      avatar?: string;
-    },
-  ) {
-    return this.prisma.sysSocialUser.create({
-      data: {
-        provider: profile.provider,
-        providerId: profile.providerId,
-        userId,
-        nickName: profile.nickName,
-        avatar: profile.avatar,
-      },
-    });
-  }
 
   // 生成JWT令牌
-  private async generateToken(user: any) {
-    const payload = { 
-      sub: user.userId,
-      username: user.userName,
-      roles: [] // 根据实际需求添加角色信息
-    };
+  async generateToken(user: SysUser) {
+   const payload: Payload = { userId:user.userId, pv: 1 };
     const token = this.jwtService.sign(payload);
-    await this.cacheManager.set(`user:${user.userId}:token`, token, 3600);
-    return {
-      user: {
-        userId: user.userId,
-        userName: user.userName,
-        nickName: user.nickName,
-        avatar: user.avatar,
+    const expiresIn = this.configService.get('expiresIn') || 60 * 60 * 24 * 7;
+    return token;
+    
+  }
+
+ async handleThirdPartyLogin(
+    provider: string,
+    providerId: string,
+    email: string,
+    username: string,
+    nickname: string,
+    avatar: string,
+    accessToken: string,
+    expireTime: Date,
+  ): Promise<SysUser> {
+    // 1. 查找是否已有该第三方账号关联
+    const socialUser = await this.prisma.sysSocialUser.findFirst({
+      where: { provider, providerId },
+      include: { user: true },
+    });
+
+    // 2. 若已关联，更新token并返回用户
+    if (socialUser) {
+      await this.prisma.sysSocialUser.update({
+        where: { socialId: socialUser.socialId },
+        data: { accessToken, expireTime },
+      });
+      return socialUser.user;
+    }
+
+    // 3. 若未关联，检查邮箱是否已存在本地用户
+    let user = email ? await this.prisma.sysUser.findFirst({ where: { email } }) : null;
+
+    // 4. 若邮箱存在，关联第三方账号到该用户
+    if (user) {
+      await this.prisma.sysSocialUser.create({
+        data: {
+          provider,
+          providerId,
+          userId: user.userId,
+          userName: user.userName,
+          nickName: nickname,
+          avatar,
+          accessToken,
+          expireTime,
+        },
+      });
+      return user;
+    }
+
+    // 5. 若完全是新用户，创建新用户并关联
+    // 确保用户名唯一（避免与现有用户冲突）
+    let uniqueUsername = username || `github_${providerId.slice(0, 8)}`;
+    let count = 1;
+    while (await this.prisma.sysUser.findUnique({ where: { userName: uniqueUsername } })) {
+      uniqueUsername = `${username}_${count++}`;
+    }
+
+    // 创建用户并关联第三方信息
+    return this.prisma.sysUser.create({
+      data: {
+        userName: uniqueUsername,
+        nickName: nickname,
+        email: email || null,
+        avatar: avatar || null,
+        // 第三方用户无需密码
+        socialAccounts: {
+          create: {
+            provider,
+            providerId,
+            accessToken,
+            expireTime,
+          },
+        },
       },
-      token,
-    };
-  }
-
-  // 获取微信用户信息
-  async getWechatUser(code: string) {
-    const { data: tokenData } = await firstValueFrom(
-      this.httpService.get(
-        `https://api.weixin.qq.com/sns/oauth2/access_token?appid=${process.env.WECHAT_APP_ID}&secret=${process.env.WECHAT_APP_SECRET}&code=${code}&grant_type=authorization_code`
-      )
-    );
-
-    const { data: userInfo } = await firstValueFrom(
-      this.httpService.get(
-        `https://api.weixin.qq.com/sns/userinfo?access_token=${tokenData.access_token}&openid=${tokenData.openid}`
-      )
-    );
-
-    return {
-      openid: tokenData.openid,
-      nickname: userInfo.nickname,
-      headimgurl: userInfo.headimgurl,
-    };
-  }
-
-  // 获取Gitee用户信息
-  async getGiteeUser(code: string) {
-    const { data: tokenData } = await firstValueFrom(
-      this.httpService.post('https://gitee.com/oauth/token', {
-        grant_type: 'authorization_code',
-        client_id: process.env.GITEE_CLIENT_ID,
-        client_secret: process.env.GITEE_CLIENT_SECRET,
-        code,
-        redirect_uri: process.env.GITEE_CALLBACK_URL,
-      })
-    );
-
-    const { data: userInfo } = await firstValueFrom(
-      this.httpService.get('https://gitee.com/api/v5/user', {
-        headers: { Authorization: `Bearer ${tokenData.access_token}` },
-      })
-    );
-
-    return {
-      id: userInfo.id,
-      name: userInfo.name,
-      avatar_url: userInfo.avatar_url,
-      email: userInfo.email,
-    };
+    });
   }
 }
