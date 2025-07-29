@@ -6,6 +6,8 @@ services:
     container_name: frontend-container
     ports:
       - "8080:8080"
+    networks:
+      - app-network
     restart: always
     env_file:
       - /app/config/frontend.env
@@ -22,6 +24,8 @@ services:
     container_name: backend-container
     ports:
       - "3000:3000"
+    networks:
+      - app-network
     # volumes:
     #   - backend-data:/data
     volumes:
@@ -34,3 +38,6 @@ services:
 # volumes:
 #   backend-data:
 #   frontend-data:
+networks:
+  app-network:
+    driver: bridge
