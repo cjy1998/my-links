@@ -18,6 +18,7 @@ import {
   Req,
   Res,
   Query,
+  Delete,
 } from '@nestjs/common';
 import { Public } from 'src/common/decorators/public.decorator';
 import { User, UserEnum } from 'src/common/decorators/user.decorator';
@@ -80,8 +81,8 @@ export class LoginController {
   }
 
   /* 退出登录 */
+  @Delete('logout')
   @Public()
-  @Post('logout')
   async logout(@Headers('Authorization') authorization: string) {
     if (authorization) {
       const token = authorization.slice(7);
