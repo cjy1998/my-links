@@ -5,7 +5,7 @@ services:
     image: ${ACR_REGISTRY}/${ACR_NAMESPACE}/ui:$TAG
     container_name: frontend-container
     ports:
-      - "80:80"
+      - "8080:8080"
     restart: always
     env_file:
       - /app/config/frontend.env
