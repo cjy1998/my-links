@@ -24,7 +24,13 @@ async function bootstrap() {
   /* 读取环境变量里是否允许跨域 */
   const cors = configService.get('cors');
   if (cors) {
-    app.enableCors();
+    app.enableCors({
+      origin: [
+    'http://localhost:3000', // 前端开发环境地址
+    'http://10.2.1.107:8000' // 若前端部署在该地址，也需添加
+  ],
+  credentials: true,
+    });
   }
 
   /* 设置 HTTP 标头来帮助保护应用免受一些众所周知的 Web 漏洞的影响 */

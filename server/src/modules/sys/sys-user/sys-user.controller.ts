@@ -285,7 +285,12 @@ export class SysUserController {
   @Get('me')
   @UseGuards(JwtAuthGuard) // 验证Cookie中的Token
   async getCurrentUser(@Req() req) {
+    //获取redis中存储的token
     // req.user 由JWT守卫解析，返回用户信息
-    return req.user;
+    return {
+      code: 200,
+      data: req.user,
+      message: '获取当前用户信息成功',
+    }
   }
 }

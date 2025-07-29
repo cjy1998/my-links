@@ -15,6 +15,7 @@ export class GitHubStrategy extends PassportStrategy(Strategy, 'github') {
   }
 
   async validate(accessToken: string, refreshToken: string, profile: any) {
+    try {
     console.log('GitHub profile:', profile); // 打印GitHub用户信息
     const email = profile.emails?.[0]?.value || null;
     const username = profile.displayName || profile.username;
@@ -36,5 +37,9 @@ export class GitHubStrategy extends PassportStrategy(Strategy, 'github') {
       accessToken,
       expireTime,
     );
-  };
+  } catch (error) {
+    console.error('GitHub authentication error:', error);
+    throw new Error('GitHub authentication failed');
+  } 
+}
 }

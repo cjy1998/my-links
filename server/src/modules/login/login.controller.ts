@@ -102,29 +102,27 @@ export class LoginController {
   @Get('callback_github')
   @UseGuards(AuthGuard('github'))
   async githubCallback(@Req() req, @Res() res: Response, @Query('error') error: string) {
+    console.log('GitHub callback received:', req.user);
     if (error) {
       console.error('GitHub authentication error:', error);
       return res.redirect(`${process.env.FRONTEND_URL}?error=auth_failed`);
     }
 
-    try {
-      // 生成JWT
-      const token = await this.authService.generateToken(req.user);
-      
-      // 设置HTTP-only Cookie
-      res.cookie('token', token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        maxAge: 3600000, // 1小时
-        sameSite: 'lax',
-      });
-
-      // 重定向到前端
-      res.redirect(process.env.FRONTEND_URL || '/');
-    } catch (err) {
-      console.error('Token generation error:', err);
-      res.redirect(`${process.env.FRONTEND_URL}?error=token_error`);
+    const userToken = await this.loginService.login(req.user, req);
+    console.log('GitHub login result:', userToken);
+    if (!userToken?.token) {
+      return res.redirect(`${process.env.FRONTEND_URL}?error=auth_failed`);
     }
+    // 登录成功后，重定向到前端应用
+    res.cookie('token', userToken.token, {
+      httpOnly: false, // 允许前端访问Cookie
+      secure: process.env.NODE_ENV === 'production', // 生产环境启用HTTPS
+      sameSite: 'lax', // 允许跨域请求携带（比Strict更兼容）
+      maxAge: 3600000 * 24 * 7, // 与登录逻辑保持一致（7天）
+      domain: process.env.NODE_ENV === 'production' ? '.yourdomain.com' : undefined // 生产环境指定主域名，便于子域共享
+    });
+    return res.redirect(`${process.env.FRONTEND_URL}`);
+
   }
 
 }

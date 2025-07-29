@@ -45,11 +45,11 @@ const ActionIcons = () => {
       <AlipayCircleOutlined key="AlipayCircleOutlined" className={langClassName} />
       <TaobaoCircleOutlined key="TaobaoCircleOutlined" className={langClassName} />
       <WeiboCircleOutlined key="WeiboCircleOutlined" className={langClassName} />
-      <GithubOutlined onClick={()=>{
-         window.location.href = 'http://localhost:8000/api/github';
-      //  get_github({}).then((res)=>{
-      //   console.log('res',res)
-      //  })
+      <GithubOutlined onClick={() => {
+        window.location.href = 'http://localhost:8000/api/github';
+        //  get_github({}).then((res)=>{
+        //   console.log('res',res)
+        //  })
 
       }} key="GithubOutlined" className={langClassName} />
     </>
@@ -185,21 +185,31 @@ const Login: React.FC = () => {
   useEffect(() => {
     getCaptchaCode();
   }, []);
-const navigate = useNavigate();
-   useEffect(() => {
+  const navigate = useNavigate();
+  useEffect(() => {
     // 检查是否已登录（通过Cookie中的Token）
     const checkLogin = async () => {
+       const res = await get_github({withCredentials: true});
+        console.log('第三方登录验证结果:', res);
       try {
-        // 调用后端验证接口（需后端实现）
-        const res = await get_github('http://localhost:3000/api/system/user/me', {
-          withCredentials: true, // 关键：携带Cookie
+        const res = await get_github('http://localhost:8000/api/system/user/me', {
+          // withCredentials: true,
         });
-        console.log('resxxxxxx',res)
-        // 若成功获取用户信息，说明已登录，跳转到首页
-        // navigate('/home');
+        console.log('第三方登录验证结果:', res);
+        if (res.code === 200 && res.data) {
+          // 2. 复用普通登录的状态保存逻辑
+          const current = new Date();
+          const expireTime = current.setTime(current.getTime() + 1000 * 12 * 60 * 60);
+          // 保存 token（如果需要在前端存储，注意：httpOnly cookie 前端无法读取，可省略）
+          setSessionToken(res.data.token || '', res.data.token || '', expireTime);
+          // 3. 调用 fetchUserInfo 获取用户信息（与普通登录一致）
+          await fetchUserInfo();
+          // 4. 跳转首页（与普通登录一致）
+          const urlParams = new URL(window.location.href).searchParams;
+          history.push(urlParams.get('redirect') || '/');
+        }
       } catch (err) {
-        // 未登录，保持在登录页
-        console.log('未登录或Token无效');
+        console.log('第三方登录验证失败:', err);
       }
     };
 
