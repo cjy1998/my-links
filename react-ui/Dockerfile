@@ -47,5 +47,5 @@ RUN echo "Nginx 文件验证:" && \
     ls -l /usr/share/nginx/html && \
     ls -l /etc/nginx/conf.d
 
-EXPOSE 80
+EXPOSE 8080 
 CMD ["nginx", "-g", "daemon off;"]
