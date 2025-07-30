@@ -26,8 +26,7 @@ async function bootstrap() {
   if (cors) {
     app.enableCors({
       origin: [
-    'http://localhost:3000', // 前端开发环境地址
-    'http://10.2.1.107:8000' // 若前端部署在该地址，也需添加
+    process.env.FRONTEND_URL, 
   ],
   credentials: true,
     });

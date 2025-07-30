@@ -119,9 +119,10 @@ export class LoginController {
       secure: process.env.NODE_ENV === 'production', // 生产环境启用HTTPS
       sameSite: 'lax', // 允许跨域请求携带（比Strict更兼容）
       maxAge: 3600000 * 24 * 7, // 与登录逻辑保持一致（7天）
-      domain: process.env.NODE_ENV === 'production' ? '.yourdomain.com' : undefined // 生产环境指定主域名，便于子域共享
+      domain: process.env.NODE_ENV === 'production' ? '.yourdomain.com' : 'localhost', // 生产环境指定主域名，便于子域共享
+      path: '/', // 确保Cookie在整个站点可用
     });
-    return res.redirect(`${process.env.FRONTEND_URL}`);
+    return res.redirect(`${process.env.FRONTEND_URL}/account/center`);
 
   }
 

@@ -186,34 +186,39 @@ const Login: React.FC = () => {
     getCaptchaCode();
   }, []);
   const navigate = useNavigate();
+  function getCookie(key:string='token') {
+  // 分割 Cookie 字符串（格式："key1=value1; key2=value2; ..."）
+  const cookies = document.cookie.split('; ');
+  console.log('document', document.cookie);
+  for (const cookie of cookies) {
+    const [cookieKey, cookieValue] = cookie.split('=');
+    if (cookieKey === key) {
+      return decodeURIComponent(cookieValue); // 解码（应对特殊字符）
+    }
+  }
+  return null; // 未找到对应 Cookie
+}
+ 
   useEffect(() => {
     // 检查是否已登录（通过Cookie中的Token）
     const checkLogin = async () => {
-       const res = await get_github({withCredentials: true});
-        console.log('第三方登录验证结果:', res);
-      try {
-        const res = await get_github('http://localhost:8000/api/system/user/me', {
-          // withCredentials: true,
-        });
-        console.log('第三方登录验证结果:', res);
-        if (res.code === 200 && res.data) {
+        const token = getCookie('token');
+    if (token) {
           // 2. 复用普通登录的状态保存逻辑
           const current = new Date();
           const expireTime = current.setTime(current.getTime() + 1000 * 12 * 60 * 60);
           // 保存 token（如果需要在前端存储，注意：httpOnly cookie 前端无法读取，可省略）
-          setSessionToken(res.data.token || '', res.data.token || '', expireTime);
+          setSessionToken(token || '', token || '', expireTime);
           // 3. 调用 fetchUserInfo 获取用户信息（与普通登录一致）
           await fetchUserInfo();
           // 4. 跳转首页（与普通登录一致）
           const urlParams = new URL(window.location.href).searchParams;
           history.push(urlParams.get('redirect') || '/');
         }
-      } catch (err) {
-        console.log('第三方登录验证失败:', err);
-      }
     };
 
     checkLogin();
+   
   }, [navigate]);
 
   return (
